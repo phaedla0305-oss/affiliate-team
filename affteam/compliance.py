@@ -31,7 +31,8 @@ def check_article(slug: str, cfg: dict, use_ai: bool = True) -> list[dict]:
     for m in re.finditer(r"<!--\s*要確認[:：]?(.*?)-->", body, re.S):
         issues.append({"severity": "warn", "quote": m.group(1).strip()[:40], "reason": "人による事実確認が必要", "where": "記事"})
     if cfg.get("automation", {}).get("no_experience_claims"):
-        for m in re.finditer(r"(使ってみ|使った感想|実際に使|個人の感想|愛用)", body):
+        # 体験談の言い回しだけを拾う（「実際に使うツール」のような普通の表現は対象外）
+        for m in re.finditer(r"(使ってみ(た|まし)|使った感想|実際に使って(み|い)|個人の感想|愛用して)", body):
             issues.append({"severity": "warn", "quote": m.group(0), "reason": "自動公開モードでは体験談を書かない設定", "where": "記事"})
 
     sns_path = SNS_DIR / f"{slug}.json"
