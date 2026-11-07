@@ -18,18 +18,15 @@ plan:
 
 # ASP で提携済みの案件（url は ASP 管理画面で発行した広告リンクを貼る）
 programs:
-  - id: sample-vpn
-    name: "サンプルVPN"
+  - id: myip
+    name: "マイIP（株式会社インターリンク）"
     asp: "A8.net"
-    url: "https://example.com/?ref=sample-vpn"
-    reward: "新規契約 1件 1,500円"
-    rules: "リスティング広告禁止 / 比較記事OK / 価格の断定表記NG"
-  - id: sample-chair
-    name: "サンプル在宅ワークチェア"
-    asp: "もしもアフィリエイト"
-    url: "https://example.com/?ref=sample-chair"
-    reward: "売上の 4%"
-    rules: "医療的効果（腰痛が治る等）の表現NG"
+    url: "https://px.a8.net/svt/ejp?a8mat=4BGFJG+CJW0XE+7QW+2HB8GI"
+    reward: "契約 1件 1,000円（マイIP / マイIPソフトイーサ版 / セカイVPN）"
+    rules: >-
+      日本の固定IPで自宅・出先・海外からVPN接続できる個人向けサービス。
+      リスティング広告は禁止。悪戯・虚偽・重複・不正、見積書発行からの申込み、スパム行為は否認。
+      料金・仕様は公式サイトの記載に従い、断定や誇張をしない。法人向けのグループ専用VPNは紹介しない
 
 # 法令・ASP規約チェック（compliance.py が機械チェックする表現）
 compliance:
