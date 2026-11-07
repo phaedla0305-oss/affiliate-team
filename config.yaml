@@ -6,7 +6,17 @@ site:
   url: "https://phaedla0305-oss.github.io/affiliate-team"
   # GA4 の測定ID（空なら計測タグを出さない）
   ga4_id: "G-FBRPJZTEH7"
+  # Google Search Console の所有権確認コード（「HTMLタグ」方式の content="..." の中身）
+  gsc_verification: ""
   author: "編集部"
+
+# 収益目標（週次レポートで達成に必要な数字を逆算する）
+goal:
+  monthly_revenue: 100000
+
+# 週次マーケットリサーチ（Claude の Web 検索。1回あたり約0.01ドル＋処理料金）
+research:
+  max_searches: 8
 
 # 何のジャンルで、誰に向けて書くか（企画AIの前提になる）
 niche: "在宅ワーク・リモートワークを快適にするガジェットとWebサービス"

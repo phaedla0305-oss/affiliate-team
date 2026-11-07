@@ -22,6 +22,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(prog="affteam")
     ap.add_argument("--dry-run", action="store_true", help="APIを呼ばずスタブで動かす")
     sub = ap.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("research")
     sub.add_parser("plan")
     p = sub.add_parser("produce")
     p.add_argument("--issue", type=int)
@@ -39,10 +40,12 @@ def main() -> int:
     if args.dry_run:
         os.environ["AFF_DRY_RUN"] = "1"
 
-    from . import build, compliance, measure, plan, produce, sns
+    from . import build, compliance, measure, plan, produce, research, sns
     from .config import PLANS_DIR, today
 
-    if args.cmd == "plan":
+    if args.cmd == "research":
+        research.run()
+    elif args.cmd == "plan":
         plan.run()
     elif args.cmd == "produce":
         if not (args.issue or args.plan):
@@ -59,6 +62,7 @@ def main() -> int:
     elif args.cmd == "measure":
         measure.run()
     elif args.cmd == "all":
+        research.run()
         plans = plan.run()
         for pl in plans:
             produce.run(plan_path=str(PLANS_DIR / f"{today()}_{pl['slug']}.json"))

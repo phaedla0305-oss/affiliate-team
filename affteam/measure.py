@@ -60,6 +60,42 @@ def aggregate() -> list[dict]:
     return sorted(out, key=lambda x: x["revenue"], reverse=True)
 
 
+def goal_status(cfg: dict) -> dict:
+    """直近30日の実績から、月の収益目標に対する達成率と、必要なPVを逆算する。"""
+    import datetime as _d
+
+    goal = int(cfg.get("goal", {}).get("monthly_revenue", 0) or 0)
+    since = (_d.date.today() - _d.timedelta(days=30)).isoformat()
+    pv = clicks = cv = rev = 0.0
+    for r in _read("ga"):
+        if r.get("date", "") >= since:
+            pv += _num(r.get("pageviews"))
+            clicks += _num(r.get("affiliate_clicks"))
+    for r in _read("asp"):
+        if r.get("date", "") >= since:
+            cv += _num(r.get("conversions"))
+            rev += _num(r.get("revenue"))
+    ctr = clicks / pv if pv else None
+    epc = rev / clicks if clicks else None
+    rpm = rev / pv if pv else None  # 1PVあたりの収益
+    return {
+        "goal": goal, "revenue_30d": int(rev), "achievement": round(rev / goal, 3) if goal else None,
+        "pv_30d": int(pv), "clicks_30d": int(clicks), "cv_30d": int(cv),
+        "ctr": round(ctr, 4) if ctr else None, "epc": round(epc, 1) if epc else None,
+        "required_pv_at_current_rate": int(goal / rpm) if rpm else None,
+    }
+
+
+def _goal_md(g: dict) -> str:
+    if not g.get("goal"):
+        return ""
+    req = f"{g['required_pv_at_current_rate']:,} PV/月" if g.get("required_pv_at_current_rate") else "算出不可（成果データ不足）"
+    ach = f"{g['achievement'] * 100:.1f}%" if g.get("achievement") is not None else "-"
+    return (f"\n## 月{g['goal']:,}円目標の進捗（直近30日）\n\n| 項目 | 値 |\n|---|---|\n"
+            f"| 確定報酬 | {g['revenue_30d']:,}円（達成率 {ach}） |\n| PV | {g['pv_30d']:,} |\n| 広告クリック | {g['clicks_30d']:,}（CTR {g['ctr'] or '-'}） |\n"
+            f"| 成果 | {g['cv_30d']:,}件（EPC {g['epc'] or '-'}円） |\n| 今の効率で目標に必要なPV | {req} |\n")
+
+
 def _stub(metrics: list[dict]) -> str:
     rows = "\n".join(f"| {m['slug']} | {m['pv']} | {m['clicks']} | {m['ctr']} | {m['cv']} | {m['revenue']} |" for m in metrics)
     return json.dumps({
@@ -86,8 +122,9 @@ def run() -> dict:
         w.writeheader()
         w.writerows(metrics)
 
-    result = extract_json(claude(render("system_claude"), render("analyze", metrics=metrics), effort="high", stub=_stub(metrics)))
-    write_text(REPORTS_DIR / f"weekly_{d}.md", f"# 週次レポート {d}\n\n{result['summary_md']}\n\n## 学び\n" +
+    goal = goal_status(cfg)
+    result = extract_json(claude(render("system_claude"), render("analyze", metrics=metrics, goal=goal), effort="high", stub=_stub(metrics)))
+    write_text(REPORTS_DIR / f"weekly_{d}.md", f"# 週次レポート {d}\n{_goal_md(goal)}\n{result['summary_md']}\n\n## 学び\n" +
                "\n".join(f"- {i}" for i in result.get("insights", [])) + "\n")
     write_json(REPORTS_DIR / "latest_insights.json", {"date": d, "insights": result.get("insights", [])})
 

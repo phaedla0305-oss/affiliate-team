@@ -44,29 +44,42 @@ def guard(*texts: str) -> None:
         )
 
 
-def claude(system: str, prompt: str, *, effort: str = "high", stub: str = "") -> str:
+def claude(system: str, prompt: str, *, effort: str = "high", stub: str = "", web_search: int = 0) -> str:
+    """web_search > 0 のとき、Anthropic のサーバー側 Web 検索ツールを最大その回数まで使わせる。"""
     guard(system, prompt)
     if is_dry_run():
         return stub
     import anthropic
 
     client = anthropic.Anthropic()  # ANTHROPIC_API_KEY を環境変数から読む
+    extra = {}
+    if web_search:
+        extra["tools"] = [{"type": "web_search_20260209", "name": "web_search", "max_uses": web_search}]
+    messages: list = [{"role": "user", "content": prompt}]
+    texts: list[str] = []
     # 長文生成になるのでストリーミング。拒否時は fallbacks="default" で自動的に別モデルへ回す
-    with client.beta.messages.stream(
-        model=CLAUDE_MODEL,
-        max_tokens=64000,
-        betas=["server-side-fallback-2026-07-01"],
-        fallbacks="default",
-        output_config={"effort": effort},
-        system=system,
-        messages=[{"role": "user", "content": prompt}],
-    ) as stream:
-        resp = stream.get_final_message()
+    for _ in range(6):
+        with client.beta.messages.stream(
+            model=CLAUDE_MODEL,
+            max_tokens=64000,
+            betas=["server-side-fallback-2026-07-01"],
+            fallbacks="default",
+            output_config={"effort": effort},
+            system=system,
+            messages=messages,
+            **extra,
+        ) as stream:
+            resp = stream.get_final_message()
+        texts += [b.text for b in resp.content if b.type == "text"]
+        if resp.stop_reason == "pause_turn":  # 検索が長引いたときは続きを依頼する
+            messages.append({"role": "assistant", "content": resp.content})
+            continue
+        break
     if resp.stop_reason == "refusal":
         raise RuntimeError(f"Claude が応答を拒否しました: {resp.stop_details}")
     if resp.stop_reason == "max_tokens":
         raise RuntimeError("Claude の出力が上限で途切れました")
-    return "".join(b.text for b in resp.content if b.type == "text")
+    return "".join(texts)
 
 
 def chatgpt(system: str, prompt: str, *, stub: str = "") -> str:

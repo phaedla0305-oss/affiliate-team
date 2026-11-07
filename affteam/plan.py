@@ -5,7 +5,7 @@ import json
 import os
 
 from . import gh
-from .config import PLANS_DIR, REPORTS_DIR, load_config, render, slugify, today, write_json
+from .config import PLANS_DIR, REPORTS_DIR, is_dry_run, load_config, render, slugify, today, write_json
 from .llm import chatgpt, claude, extract_json
 
 STUB_IDEAS = json.dumps([
@@ -35,12 +35,15 @@ def run() -> list[dict]:
     insights_path = REPORTS_DIR / "latest_insights.json"
     insights = insights_path.read_text(encoding="utf-8") if insights_path.exists() else "（まだ効果測定データなし）"
     programs = [{k: p[k] for k in ("id", "name", "reward", "rules")} for p in cfg["programs"]]
+    from .research import latest
+    r = latest()
+    research = {k: r.get(k) for k in ("keywords", "competitor_gaps", "title_patterns")} if r else "（調査データなし）"
 
     # 1) ChatGPT: 発散（量を出す）
     ideas_raw = chatgpt(
         render("system_chatgpt"),
         render("brainstorm", niche=cfg["niche"], target=cfg["target"], programs=programs,
-               insights=insights, n=str(cfg["plan"]["ideas_per_run"])),
+               insights=insights, research=research, n=str(cfg["plan"]["ideas_per_run"])),
         stub=STUB_IDEAS,
     )
     ideas = extract_json(ideas_raw)
@@ -50,11 +53,14 @@ def run() -> list[dict]:
     plans_raw = claude(
         render("system_claude"),
         render("plan", niche=cfg["niche"], target=cfg["target"], programs=programs, ideas=ideas,
-               insights=insights, n=str(cfg["plan"]["plans_per_run"])),
+               insights=insights, research=research, n=str(cfg["plan"]["plans_per_run"])),
         effort="high",
         stub=STUB_PLANS,
     )
     plans = extract_json(plans_raw)
+    if is_dry_run():  # スタブ企画を、設定中の案件に合わせる
+        for p in plans:
+            p["program_id"] = cfg["programs"][0]["id"]
 
     # 3) 保存して GitHub Issue に起票（人が内容を確認し approved ラベルで制作へ）
     for p in plans:
