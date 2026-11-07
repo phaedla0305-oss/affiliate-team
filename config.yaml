@@ -5,7 +5,7 @@ site:
   # GitHub Pages の公開URL（例: https://ユーザー名.github.io/リポジトリ名）
   url: "https://phaedla0305-oss.github.io/affiliate-team"
   # GA4 の測定ID（空なら計測タグを出さない）
-  ga4_id: ""
+  ga4_id: "G-FBRPJZTEH7"
   author: "編集部"
 
 # 何のジャンルで、誰に向けて書くか（企画AIの前提になる）

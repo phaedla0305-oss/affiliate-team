@@ -44,14 +44,14 @@ def _page(cfg: dict, title: str, desc: str, body: str, prefix: str) -> str:
 <link rel="stylesheet" href="{prefix}style.css">{_ga(s.get('ga4_id', ''))}</head><body>
 <header><a href="{prefix}index.html">{html.escape(s['name'])}</a></header>
 <main><p class="pr">{html.escape(cfg['compliance']['pr_label'])}</p>{body}</main>
-<footer>© {html.escape(s['name'])} ／ 当サイトはアフィリエイトプログラムに参加しています。</footer></body></html>"""
+<footer>© {html.escape(s['name'])} ／ 当サイトはアフィリエイトプログラムに参加しています。 ／ <a href="{prefix}privacy.html">プライバシーポリシー</a></footer></body></html>"""
 
 
 def _aff_links(body_md: str, slug: str) -> str:
     def repl(m: re.Match) -> str:
         pid, label = m.group(1), (m.group(2) or "公式サイトを見る")
         return (f'<a class="cta" href="../go/{pid}.html?from={slug}" rel="sponsored noopener" '
-                f"onclick=\"gtag('event','affiliate_click',{{program_id:'{pid}',article:'{slug}'}})\">{html.escape(label)}</a>")
+                f"onclick=\"gtag('event','affiliate_click',{{program_id:'{pid}',article:'{slug}',transport_type:'beacon'}})\">{html.escape(label)}</a>")
     return re.sub(r"\[\[aff:([a-zA-Z0-9_-]+)(?:\|([^\]]+))?\]\]", repl, body_md)
 
 
@@ -77,11 +77,24 @@ def run() -> int:
         url = json.dumps(p["url"])
         body = (f"<p>{html.escape(p['name'])} の公式サイトへ移動します…</p>"
                 f"<p><a href=\"{html.escape(p['url'])}\" rel=\"sponsored noopener\">移動しない場合はこちら</a></p>"
-                f"<script>var a=new URLSearchParams(location.search).get('from')||'direct';"
-                f"gtag('event','affiliate_redirect',{{program_id:'{p['id']}',article:a}});"
-                f"setTimeout(function(){{location.replace({url})}},400);</script>")
+                f"<script>var a=new URLSearchParams(location.search).get('from')||'direct',d=false;"
+                f"function go(){{if(!d){{d=true;location.replace({url})}}}}"
+                f"gtag('event','affiliate_redirect',{{program_id:'{p['id']}',article:a,transport_type:'beacon',event_callback:go}});"
+                f"setTimeout(go,1200);</script>")
         write_text(SITE_DIR / "go" / f"{p['id']}.html",
                    _page(cfg, p["name"], "", body, "../").replace("<head>", '<head><meta name="robots" content="noindex">'))
+
+    name = html.escape(cfg["site"]["name"])
+    privacy = f"""<h1>プライバシーポリシー</h1>
+<h2>アクセス解析ツールについて</h2>
+<p>{name}（以下「当サイト」）は、Googleによるアクセス解析ツール「Googleアナリティクス」を利用しています。Googleアナリティクスはデータの収集のためにCookieを使用します。このデータは匿名で収集されており、個人を特定するものではありません。</p>
+<p>この機能はブラウザの設定でCookieを無効にすることで、収集を拒否できます。詳しくは<a href="https://marketingplatform.google.com/about/analytics/terms/jp/" rel="noopener">Googleアナリティクス利用規約</a>および<a href="https://policies.google.com/technologies/partner-sites?hl=ja" rel="noopener">Googleのポリシーと規約</a>をご覧ください。</p>
+<h2>広告について</h2>
+<p>当サイトは、A8.netなどのアフィリエイトプログラムに参加しています。記事内のリンクから商品・サービスを申し込むと、当サイトが広告主から報酬を受け取る場合があります。広告リンクを経由した場合、ASP・広告主がCookie等を用いて成果を計測することがあります。</p>
+<p>記事の内容は、公式情報などをもとに当サイトが独自に作成しています。</p>
+<h2>免責事項</h2>
+<p>掲載情報は記事公開時点のものです。料金・仕様などの最新情報は、各サービスの公式サイトでご確認ください。</p>"""
+    write_text(SITE_DIR / "privacy.html", _page(cfg, f"プライバシーポリシー｜{cfg['site']['name']}", "", privacy, ""))
 
     items = "".join(f'<li><a href="articles/{s}.html">{html.escape(t)}</a><div class="meta">{d} {html.escape(desc)}</div></li>'
                     for d, s, t, desc in sorted(index, reverse=True))
