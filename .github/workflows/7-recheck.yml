@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.AUTOMATION_TOKEN || github.token }}
+          fetch-depth: 0
       - name: PRのブランチに切り替え
         id: pr
         run: |
@@ -34,7 +35,7 @@ jobs:
         run: |
           git config user.name "affiliate-team-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git merge --no-edit origin/main || { git merge --abort; echo "main の取り込みで競合（そのまま続行）"; }
+          git merge --no-edit origin/main || { git merge --abort || true; echo "main の取り込みで競合（そのまま続行）"; }
       - name: 法令・規約チェック → 自動修正 → 再チェック → 公開判定（機械 + Claude）
         id: gate
         continue-on-error: true
