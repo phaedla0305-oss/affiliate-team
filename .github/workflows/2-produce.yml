@@ -33,14 +33,10 @@ jobs:
       - name: 対象記事を特定
         id: slug
         run: echo "slug=$(ls -t content/articles/*.md | head -1 | xargs basename -s .md)" >> "$GITHUB_OUTPUT"
-      - name: 法令・規約チェック（機械 + Claude）
-        id: check
-        continue-on-error: true
-        run: python -m affteam check --slug "${{ steps.slug.outputs.slug }}"
-      - name: 自動公開してよいか判定
+      - name: 法令・規約チェック → 自動修正 → 再チェック → 公開判定（機械 + Claude）
         id: gate
         continue-on-error: true
-        run: python -m affteam gate --slug "${{ steps.slug.outputs.slug }}"
+        run: python -m affteam review --slug "${{ steps.slug.outputs.slug }}"
       - name: PR を作成し、自動マージ or 確認依頼
         env:
           SLUG: ${{ steps.slug.outputs.slug }}

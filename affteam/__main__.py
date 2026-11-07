@@ -32,6 +32,8 @@ def main() -> int:
     c.add_argument("--no-ai", action="store_true")
     g = sub.add_parser("gate")
     g.add_argument("--slug", required=True)
+    rv = sub.add_parser("review", help="チェック → 自動修正 → 再チェック → 公開判定（終了コード0=自動公開OK）")
+    rv.add_argument("--slug", required=True)
     sub.add_parser("build")
     sub.add_parser("sns")
     sub.add_parser("measure")
@@ -54,6 +56,11 @@ def main() -> int:
     elif args.cmd == "check":
         return compliance.run(args.slug, use_ai=not args.no_ai)
     elif args.cmd == "gate":
+        return 0 if compliance.gate(args.slug) else 2
+    elif args.cmd == "review":
+        compliance.run([args.slug])
+        if not compliance.gate(args.slug) and compliance.fix(args.slug):
+            compliance.run([args.slug])  # 修正後にもう一度だけチェック
         return 0 if compliance.gate(args.slug) else 2
     elif args.cmd == "build":
         build.run()

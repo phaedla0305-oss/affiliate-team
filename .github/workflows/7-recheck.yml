@@ -21,30 +21,32 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.AUTOMATION_TOKEN || github.token }}
+          fetch-depth: 0
       - name: PRのブランチに切り替え
         id: pr
         run: |
           BR=$(gh pr view "$PR" --json headRefName --jq .headRefName)
-          git fetch origin "$BR" && git checkout "$BR"
+          git fetch origin "$BR" main && git checkout "$BR"
           echo "slug=${BR#content/}" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt
-      - name: 法令・規約チェック（機械 + Claude）
-        continue-on-error: true
-        run: python -m affteam check --slug "${{ steps.pr.outputs.slug }}"
-      - name: 自動公開してよいか判定
+      - name: 最新の main（プログラム・案件の確認済み事実）を取り込む
+        run: |
+          git config user.name "affiliate-team-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge --no-edit origin/main || { git merge --abort || true; echo "main の取り込みで競合（そのまま続行）"; }
+      - name: 法令・規約チェック → 自動修正 → 再チェック → 公開判定（機械 + Claude）
         id: gate
         continue-on-error: true
-        run: python -m affteam gate --slug "${{ steps.pr.outputs.slug }}"
+        run: python -m affteam review --slug "${{ steps.pr.outputs.slug }}"
       - name: 結果を反映
         env:
           SLUG: ${{ steps.pr.outputs.slug }}
           GATE: ${{ steps.gate.outcome }}
         run: |
-          git config user.name "affiliate-team-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/compliance && git commit -m "再チェック: $SLUG" && git push || true
+          git add content/articles reports/compliance && git commit -m "再チェック・自動修正: $SLUG" || true
+          git push || true
           gh pr comment "$PR" --body "$(printf '## 再チェック結果\n\n%s' "$(cat reports/compliance/$SLUG.md)")"
           if [ "$GATE" = "success" ]; then
             gh pr edit "$PR" --remove-label needs-review || true

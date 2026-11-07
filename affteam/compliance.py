@@ -74,6 +74,35 @@ def run(slugs: list[str] | None = None, use_ai: bool = True) -> int:
     return worst
 
 
+def fix(slug: str) -> bool:
+    """直前の check の指摘（critical 以外）を、Claude が記事に反映する。修正したら True。"""
+    cfg = load_config()
+    path = REPORTS_DIR / "compliance" / f"{slug}.json"
+    if not path.exists():
+        return False
+    issues = [i for i in json.loads(path.read_text(encoding="utf-8")) if i.get("severity") != "critical"]
+    if not issues or len(issues) != len(json.loads(path.read_text(encoding="utf-8"))):
+        print(f"[自動修正] {slug}: 対象なし（指摘なし、または critical を含むため人の確認へ）")
+        return False
+    art = ARTICLES_DIR / f"{slug}.md"
+    md = art.read_text(encoding="utf-8")
+    meta, _ = parse_front_matter(md)
+    fixed = claude(
+        render("system_claude"),
+        render("fix", article=md, issues=issues, program=program_by_id(cfg, meta.get("program_id", "")) or {}),
+        effort="medium",
+        stub=md,
+    ).strip()
+    if fixed.startswith("```"):
+        fixed = fixed.strip("`").split("\n", 1)[1]
+    if not fixed.startswith("---"):
+        print(f"[自動修正] {slug}: 出力の形式が不正なため反映しません")
+        return False
+    art.write_text(fixed + "\n", encoding="utf-8")
+    print(f"[自動修正] {slug}: 指摘 {len(issues)} 件を反映")
+    return True
+
+
 def gate(slug: str) -> bool:
     """自動公開してよいか。直前の check の結果で、指摘が1件も無いときだけ True。"""
     cfg = load_config()
