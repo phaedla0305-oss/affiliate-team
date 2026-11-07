@@ -1,0 +1,26 @@
+name: 企画提案（手動）
+description: 自分で思いついた企画を登録。approved ラベルを付けると制作AIが記事化します
+title: "[企画] "
+labels: ["kikaku"]
+body:
+  - type: textarea
+    id: plan
+    attributes:
+      label: 企画データ
+      description: 下の JSON を書き換えてください（制作AIがこのまま読み込みます）
+      render: json
+      value: |
+        {
+          "slug": "my-article",
+          "title": "記事タイトル",
+          "keyword": "狙うキーワード",
+          "persona": "読者像",
+          "pain": "読者の悩み",
+          "program_id": "config.yaml の案件ID",
+          "angle": "切り口",
+          "outline": ["見出し1", "見出し2", "見出し3"],
+          "cta": "読者に取ってほしい行動",
+          "evidence_needed": [],
+          "risk_notes": []
+        }
+    validations: { required: true }

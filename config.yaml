@@ -1,0 +1,67 @@
+# ===== チーム全体の設定（ここを自分の案件に書き換えて使う） =====
+
+site:
+  name: "在宅ワーク道具箱"
+  # GitHub Pages の公開URL（例: https://ユーザー名.github.io/リポジトリ名）
+  url: "https://example.github.io/affiliate-team"
+  # GA4 の測定ID（空なら計測タグを出さない）
+  ga4_id: ""
+  author: "編集部"
+
+# 何のジャンルで、誰に向けて書くか（企画AIの前提になる）
+niche: "在宅ワーク・リモートワークを快適にするガジェットとWebサービス"
+target: "在宅勤務が週3日以上ある25〜45歳の会社員・フリーランス"
+
+plan:
+  ideas_per_run: 10   # ChatGPT が出すアイデア数
+  plans_per_run: 2    # Claude が企画書に落とす本数
+
+# ASP で提携済みの案件（url は ASP 管理画面で発行した広告リンクを貼る）
+programs:
+  - id: sample-vpn
+    name: "サンプルVPN"
+    asp: "A8.net"
+    url: "https://example.com/?ref=sample-vpn"
+    reward: "新規契約 1件 1,500円"
+    rules: "リスティング広告禁止 / 比較記事OK / 価格の断定表記NG"
+  - id: sample-chair
+    name: "サンプル在宅ワークチェア"
+    asp: "もしもアフィリエイト"
+    url: "https://example.com/?ref=sample-chair"
+    reward: "売上の 4%"
+    rules: "医療的効果（腰痛が治る等）の表現NG"
+
+# 法令・ASP規約チェック（compliance.py が機械チェックする表現）
+compliance:
+  pr_label: "本ページはプロモーション（アフィリエイト広告）を含みます。"
+  sns_tags: ["#PR", "#広告"]
+  ng_patterns:
+    - { pattern: "絶対(に)?(痩せ|治|稼げ|儲か|効)", level: critical, reason: "効果の断定（景表法・薬機法）" }
+    - { pattern: "必ず(痩せ|治|稼げ|儲か|効)", level: critical, reason: "効果の断定（景表法・薬機法）" }
+    - { pattern: "(完治|治る|治ります|治療でき)", level: critical, reason: "医薬品的な効能表現（薬機法）" }
+    - { pattern: "副作用(が|は)?(ない|なし|ゼロ)", level: critical, reason: "安全性の断定（薬機法）" }
+    - { pattern: "誰でも(簡単に)?(稼げ|儲か)", level: critical, reason: "収益の断定（景表法）" }
+    - { pattern: "(No\\.?1|ナンバーワン|業界一|日本一|世界一)", level: warn, reason: "No.1表示は客観的根拠と出典の明記が必要" }
+    - { pattern: "(最安|最安値|業界最安)", level: warn, reason: "最安表示は調査日・範囲の明記が必要" }
+    - { pattern: "100\\s*[%％]", level: warn, reason: "100%表現は根拠が必要" }
+
+sns:
+  platform: x
+  # true なら実際に投稿する（X の API キーが未登録のときは投稿キュー作成に自動で切り替わる）
+  live: true
+
+github:
+  # 実装タスクを割り当てる Copilot coding agent のアサイン名
+  copilot_assignee: "@copilot"
+
+# ===== 自動化（AIへの権限委譲） =====
+automation:
+  # 企画 Issue を人の承認なしで制作に回す
+  auto_approve_plans: true
+  # 法令チェックが完全にクリーンな記事は PR を自動マージ（＝自動公開）する
+  # critical / warn / 「要確認」コメントが1つでも残る記事は自動公開せず、あなたの確認待ちになる
+  auto_merge: true
+  # 自動公開モードでは記事に体験談を書かせない（体験の捏造はステマ・優良誤認のリスクが高いため）
+  no_experience_claims: true
+  # AI に送るプロンプトに次の情報が含まれていたら送信を止め、あなたの確認待ちにする
+  block_sensitive_in_prompts: true

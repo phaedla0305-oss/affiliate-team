@@ -1,0 +1,96 @@
+"""⑥ 効果測定: アクセス（GA4）と成果（ASP）の CSV を突き合わせ、Claude が分析して次の打ち手を出す。
+
+入力（どちらも各サービスの管理画面から CSV エクスポートして置く）:
+  data/metrics/ga/*.csv  … date,slug,pageviews,affiliate_clicks
+  data/metrics/asp/*.csv … date,program_id,slug,clicks,conversions,revenue
+                           （ASP がサブID/記事別に出せない場合 slug は空欄でOK → 案件単位で集計）
+出力:
+  reports/metrics_日付.csv, reports/weekly_日付.md, reports/latest_insights.json（次回の企画に渡る）
+  GitHub Issue: kaizen（記事改善） / implement（サイト改善 → Copilot に割り当て）
+"""
+from __future__ import annotations
+
+import csv
+import json
+from collections import defaultdict
+
+from . import gh
+from .config import METRICS_DIR, REPORTS_DIR, is_dry_run, load_config, render, today, write_json, write_text
+from .llm import claude, extract_json
+
+
+def _read(folder: str) -> list[dict]:
+    rows = []
+    base = METRICS_DIR / "sample" if is_dry_run() else METRICS_DIR  # ドライランはサンプルCSVを使う
+    for f in sorted((base / folder).glob("*.csv")):
+        with open(f, encoding="utf-8-sig", newline="") as fp:
+            rows += list(csv.DictReader(fp))
+    return rows
+
+
+def _num(v) -> float:
+    try:
+        return float(str(v).replace(",", "") or 0)
+    except ValueError:
+        return 0.0
+
+
+def aggregate() -> list[dict]:
+    stats: dict[str, dict] = defaultdict(lambda: {"pv": 0.0, "clicks": 0.0, "cv": 0.0, "revenue": 0.0, "program_id": ""})
+    for r in _read("ga"):
+        s = stats[r["slug"]]
+        s["pv"] += _num(r.get("pageviews"))
+        s["clicks"] += _num(r.get("affiliate_clicks"))
+    for r in _read("asp"):
+        key = r.get("slug") or f"(案件) {r['program_id']}"
+        s = stats[key]
+        s["program_id"] = r["program_id"]
+        s["cv"] += _num(r.get("conversions"))
+        s["revenue"] += _num(r.get("revenue"))
+        if not r.get("slug"):
+            s["clicks"] += _num(r.get("clicks"))
+    out = []
+    for slug, s in stats.items():
+        out.append({
+            "slug": slug, "program_id": s["program_id"], "pv": int(s["pv"]), "clicks": int(s["clicks"]),
+            "ctr": round(s["clicks"] / s["pv"], 4) if s["pv"] else None,
+            "cv": int(s["cv"]), "cvr": round(s["cv"] / s["clicks"], 4) if s["clicks"] else None,
+            "revenue": int(s["revenue"]), "epc": round(s["revenue"] / s["clicks"], 1) if s["clicks"] else None,
+        })
+    return sorted(out, key=lambda x: x["revenue"], reverse=True)
+
+
+def _stub(metrics: list[dict]) -> str:
+    rows = "\n".join(f"| {m['slug']} | {m['pv']} | {m['clicks']} | {m['ctr']} | {m['cv']} | {m['revenue']} |" for m in metrics)
+    return json.dumps({
+        "summary_md": f"## 今週のサマリー（ドライラン）\n\n| 記事 | PV | クリック | CTR | CV | 報酬 |\n|---|---|---|---|---|---|\n{rows}",
+        "insights": ["選び方系の記事はCTRが高い。比較・チェックリスト型を優先する"],
+        "content_actions": [{"title": "CTRの低い記事の冒頭に結論とCTAを追加", "body": "ファーストビューに結論とCTAボタンを置く"}],
+        "implement_actions": [{"title": "記事下に関連記事ブロックを追加", "body": "build.py の記事テンプレートに同じ program_id の記事を最大3件表示する。\n受け入れ条件: AFF_DRY_RUN=1 python -m affteam build が成功すること"}],
+    }, ensure_ascii=False)
+
+
+def run() -> dict:
+    cfg = load_config()
+    metrics = aggregate()
+    if not metrics:
+        print("[効果測定] data/metrics/ に CSV がありません")
+        return {}
+    d = today()
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    with open(REPORTS_DIR / f"metrics_{d}.csv", "w", encoding="utf-8-sig", newline="") as fp:
+        w = csv.DictWriter(fp, fieldnames=list(metrics[0].keys()))
+        w.writeheader()
+        w.writerows(metrics)
+
+    result = extract_json(claude(render("system_claude"), render("analyze", metrics=metrics), effort="high", stub=_stub(metrics)))
+    write_text(REPORTS_DIR / f"weekly_{d}.md", f"# 週次レポート {d}\n\n{result['summary_md']}\n\n## 学び\n" +
+               "\n".join(f"- {i}" for i in result.get("insights", [])) + "\n")
+    write_json(REPORTS_DIR / "latest_insights.json", {"date": d, "insights": result.get("insights", [])})
+
+    for a in result.get("content_actions", []):
+        gh.create_issue(f"[改善] {a['title']}", a["body"] + f"\n\n（{d} の週次レポートより）", ["kaizen"])
+    for a in result.get("implement_actions", []):
+        gh.create_issue(f"[実装] {a['title']}", a["body"], ["implement"], assignee=cfg["github"].get("copilot_assignee"))
+    print(f"[効果測定] レポート: reports/weekly_{d}.md / 改善 {len(result.get('content_actions', []))} 件・実装 {len(result.get('implement_actions', []))} 件を起票")
+    return result

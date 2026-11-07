@@ -1,0 +1,20 @@
+name: 実装タスク（Copilot 向け）
+description: サイトの見た目・導線・計測の改善。Copilot に割り当てると PR を作ります
+title: "[実装] "
+labels: ["implement"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: やりたいこと
+      placeholder: 例）記事下に同じ案件の関連記事を最大3件表示する
+    validations: { required: true }
+  - type: textarea
+    id: done
+    attributes:
+      label: 受け入れ条件
+      value: |
+        - [ ] `python -m affteam --dry-run all` が成功する
+        - [ ] PR 表記と rel="sponsored" が維持されている
+        - [ ] スマホ幅で崩れない
+    validations: { required: true }
