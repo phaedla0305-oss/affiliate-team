@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "0 0 * * 1"
   workflow_dispatch:
+    inputs:
+      auto_approve:
+        description: "企画を自動承認して制作・公開まで進める"
+        type: choice
+        options: ["true", "false"]
+        default: "true"
 permissions:
   contents: write
   issues: write
@@ -21,6 +27,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AFF_AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'true' }}
           # 自動承認ラベルで「2. 制作」を起動するため PAT を使う
           GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
       - name: 企画データを保存

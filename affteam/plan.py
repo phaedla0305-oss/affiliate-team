@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 from . import gh
 from .config import PLANS_DIR, REPORTS_DIR, load_config, render, slugify, today, write_json
@@ -69,7 +70,8 @@ def run() -> list[dict]:
             f"{json.dumps(p, ensure_ascii=False, indent=2)}\n```\n</details>\n"
         )
         url = gh.create_issue(f"[企画] {p['title']}", body, ["kikaku"])
-        if cfg.get("automation", {}).get("auto_approve_plans"):
+        auto = cfg.get("automation", {}).get("auto_approve_plans") and os.getenv("AFF_AUTO_APPROVE", "true") != "false"
+        if auto:
             gh.add_label(url, "approved")  # 自動承認 → 制作ワークフローが起動
         print(f"[企画] 保存: {path.relative_to(PLANS_DIR.parent.parent)}")
     return plans
