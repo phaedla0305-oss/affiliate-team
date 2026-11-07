@@ -77,7 +77,7 @@ def run() -> dict:
         ga4.fetch()
     metrics = aggregate()
     if not metrics:
-        print("[効果測定] data/metrics/ に CSV がありません")
+        print("[効果測定] 集計できるデータがまだありません（分析と起票はスキップ）")
         return {}
     d = today()
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
