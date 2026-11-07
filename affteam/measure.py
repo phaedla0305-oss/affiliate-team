@@ -72,6 +72,9 @@ def _stub(metrics: list[dict]) -> str:
 
 def run() -> dict:
     cfg = load_config()
+    if not is_dry_run():
+        from . import ga4
+        ga4.fetch()
     metrics = aggregate()
     if not metrics:
         print("[効果測定] data/metrics/ に CSV がありません")

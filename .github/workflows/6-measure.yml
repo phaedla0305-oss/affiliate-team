@@ -16,12 +16,21 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt
+      - name: GA4 の鍵を一時ファイルに書き出す（ジョブ終了で消える）
+        env:
+          GA4_SA_KEY: ${{ secrets.GA4_SA_KEY }}
+        run: |
+          if [ -n "$GA4_SA_KEY" ]; then
+            printf '%s' "$GA4_SA_KEY" > "$RUNNER_TEMP/ga4-key.json"
+            echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/ga4-key.json" >> "$GITHUB_ENV"
+          fi
       - run: python -m affteam measure
         env:
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # Copilot への割り当てはユーザー権限が必要なため、Copilot 契約者の PAT（AUTOMATION_TOKEN）を使う
           GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports && git commit -m "週次レポート $(date +%F)" && git push || echo "変更なし"
+          git add reports data/metrics && git commit -m "週次レポート $(date +%F)" && git push || echo "変更なし"
