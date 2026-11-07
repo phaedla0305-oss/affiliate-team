@@ -44,7 +44,8 @@ def check_article(slug: str, cfg: dict, use_ai: bool = True) -> list[dict]:
     if use_ai:
         review = extract_json(claude(
             render("system_claude"),
-            render("review", article=md, program=program_by_id(cfg, meta.get("program_id", "")) or {}),
+            render("review", article=md, program=program_by_id(cfg, meta.get("program_id", "")) or {},
+                   pr_label=cfg["compliance"]["pr_label"]),
             effort="high",
             stub=STUB_REVIEW,
         ))

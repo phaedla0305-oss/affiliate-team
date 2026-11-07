@@ -76,6 +76,7 @@ def run(plan_path: str | None = None, issue: int | None = None) -> Path:
         render("article", plan=plan, program=program, site=cfg["site"],
                ng_rules=cfg["compliance"]["ng_patterns"], date=today(), experience_rule=experience_rule),
         effort="high",
+        web_search=int(cfg.get("research", {}).get("article_searches", 6)),
         stub=_stub_article(plan),
     ).strip()
     if article.startswith("```"):
