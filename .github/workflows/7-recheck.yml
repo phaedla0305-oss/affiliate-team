@@ -1,0 +1,52 @@
+# 確認待ちの記事PRを、Claude のレビュー込みでチェックし直す（記事を手直ししたあとに使う）
+# 指摘0件なら自動マージ（→ 4. 公開）。残っていればPRに結果を書いて確認待ちのまま
+name: 7. 再チェック
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "記事PRの番号"
+        required: true
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      PR: ${{ github.event.inputs.pr }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.AUTOMATION_TOKEN || github.token }}
+      - name: PRのブランチに切り替え
+        id: pr
+        run: |
+          BR=$(gh pr view "$PR" --json headRefName --jq .headRefName)
+          git fetch origin "$BR" && git checkout "$BR"
+          echo "slug=${BR#content/}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - name: 法令・規約チェック（機械 + Claude）
+        continue-on-error: true
+        run: python -m affteam check --slug "${{ steps.pr.outputs.slug }}"
+      - name: 自動公開してよいか判定
+        id: gate
+        continue-on-error: true
+        run: python -m affteam gate --slug "${{ steps.pr.outputs.slug }}"
+      - name: 結果を反映
+        env:
+          SLUG: ${{ steps.pr.outputs.slug }}
+          GATE: ${{ steps.gate.outcome }}
+        run: |
+          git config user.name "affiliate-team-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/compliance && git commit -m "再チェック: $SLUG" && git push || true
+          gh pr comment "$PR" --body "$(printf '## 再チェック結果\n\n%s' "$(cat reports/compliance/$SLUG.md)")"
+          if [ "$GATE" = "success" ]; then
+            gh pr edit "$PR" --remove-label needs-review || true
+            gh pr merge "$PR" --squash --delete-branch
+          fi
