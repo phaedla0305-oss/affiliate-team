@@ -15,7 +15,23 @@
     "ad_events": []
   },
   "search_console": {
-    "status": "未取得（Search Console API 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'https://phaedla0305-oss.github.io/zaitaku-toolbox/'. See also: https://support.google.com/webmasters/）"
+    "status": "取得",
+    "pages": {},
+    "sitemaps": [
+      {
+        "path": "https://phaedla0305-oss.github.io/zaitaku-toolbox/sitemap.xml",
+        "lastDownloaded": null,
+        "errors": "0",
+        "warnings": "0",
+        "isPending": true
+      }
+    ],
+    "index": {
+      "cafe-free-wifi-safety-vpn": "URL is unknown to Google",
+      "freelance-kotei-ip-hitsuyou-mail-template": "URL is unknown to Google",
+      "kisei-telework-ip-seigen-checklist": "URL is unknown to Google",
+      "zaitaku-home-router-erabikata": "URL is unknown to Google"
+    }
   },
   "a8": {
     "status": "未取得（A8の成果CSVがない）"
