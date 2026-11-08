@@ -1,0 +1,29 @@
+# 公開済み記事の SNS 投稿案だけを ChatGPT で作る（ChatGPT API 1回まで）
+name: 9. SNS案の作成
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "記事のslug（content/articles/の名前）"
+        required: true
+permissions:
+  contents: write
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AFF_MAX_API_CALLS: "1"
+      SLUG: ${{ github.event.inputs.slug }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - run: python -m affteam sns-draft --slug "$SLUG"
+      - name: 規約チェック（#PR の有無などを機械チェック）
+        run: python -m affteam check --slug "$SLUG" --no-ai
+      - run: |
+          git config user.name "affiliate-team-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/sns && git commit -m "SNS案: $SLUG" && git push || echo "変更なし"
