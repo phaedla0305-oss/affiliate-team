@@ -100,6 +100,8 @@ compliance:
 
 sns:
   platform: x
+  # 投稿に使う X アカウント
+  handle: "@zaitaku_toolbox"
   # true なら実際に投稿する（X の API キーが未登録のときは投稿キュー作成に自動で切り替わる）
   live: true
 
