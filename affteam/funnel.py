@@ -62,6 +62,15 @@ def build(snap: dict) -> dict:
             "rows": rows, "revenue": revenue, "conversions": conversions}
 
 
+def _title_ideas(slug: str) -> list[str]:
+    """ChatGPT から受け取ったタイトル案（data/seeds/*.json の title_ideas）。"""
+    import json
+    ideas = []
+    for f in sorted((ARTICLES_DIR.parent.parent / "data" / "seeds").glob("*.json")):
+        ideas += json.loads(f.read_text(encoding="utf-8")).get("title_ideas", {}).get(slug, [])
+    return ideas
+
+
 def candidates(f: dict) -> list[dict]:
     """実績から改善候補を出す（優先度順・最大3件）。サンプル不足なら出さない。"""
     out = []
@@ -71,7 +80,9 @@ def candidates(f: dict) -> list[dict]:
             out.append({"priority": r["impressions"], "slug": r["slug"],
                         "title": f"[改善] 表示されるがクリックされない: {r['title'][:30]}",
                         "body": f"期間 {f['period']['start']}〜{f['period']['end']}：表示 {r['impressions']}回、検索クリック {r['search_clicks']}回"
-                                f"（検索CTR {r['search_ctr']:.1%}）。主な検索語：{q}。\n検索語に合わせてタイトル・説明文を見直す。"})
+                                f"（検索CTR {r['search_ctr']:.1%}）。主な検索語：{q}。\n検索語に合わせてタイトル・説明文を見直す。"
+                                + ("\nChatGPT のタイトル案（検索語と照らして検証してから使う）：" + " ／ ".join(_title_ideas(r["slug"]))
+                                   if _title_ideas(r["slug"]) else "")})
         if r["pageviews"] is not None and r["pageviews"] >= MIN_PAGEVIEWS and (r["ad_click_rate"] or 0) < 0.01:
             out.append({"priority": r["pageviews"], "slug": r["slug"],
                         "title": f"[改善] 読まれるが広告がクリックされない: {r['title'][:30]}",

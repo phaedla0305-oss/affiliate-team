@@ -38,7 +38,13 @@ def run() -> list[dict]:
     from .research import _articles, latest
     existing = _articles()  # 公開済み記事（重複企画を防ぐ）
     r = latest()
-    research = {k: r.get(k) for k in ("keywords", "competitor_gaps", "title_patterns")} if r else "（調査データなし）"
+    research = {k: r.get(k) for k in ("keywords", "competitor_gaps", "title_patterns")} if r else {}
+    seeds = []
+    for f in sorted((PLANS_DIR.parent / "seeds").glob("*.json")):  # ChatGPT から受け取った企画の種
+        seeds += json.loads(f.read_text(encoding="utf-8")).get("keyword_seeds", [])
+    if seeds:
+        research["chatgpt_keyword_seeds"] = seeds
+    research = research or "（調査データなし）"
 
     # 1) ChatGPT: 発散（量を出す）
     ideas_raw = chatgpt(

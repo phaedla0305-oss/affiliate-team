@@ -97,6 +97,12 @@ def run(plan_path: str | None = None, issue: int | None = None) -> Path:
     return path
 
 
+def _xlen(s: str) -> int:
+    """X の重み付き文字数の概算（全角・CJK は2、それ以外は1）。"""
+    import unicodedata
+    return sum(2 if unicodedata.east_asian_width(c) in "WFA" else 1 for c in s)
+
+
 def sns_draft(slug: str) -> Path:
     """公開済み記事の SNS 投稿案だけを ChatGPT で作る（記事本文は変えない）。"""
     from .config import parse_front_matter
@@ -114,9 +120,9 @@ def sns_draft(slug: str) -> Path:
     tags = cfg["compliance"]["sns_tags"]
     posts = [p.strip() for p in sns.get("x_posts", []) if isinstance(p, str)]
     # 規約タグがない・長すぎる案は使わない（URL は投稿時に付ける）
-    posts = [p for p in posts if any(t in p for t in tags) and len(p) <= 140]
+    posts = [p for p in posts if any(t in p for t in tags) and _xlen(p) + 24 <= 280]  # 改行1＋URL23
     if not posts:
-        raise RuntimeError("条件を満たす投稿案がありませんでした（#PR 付き・140字以内）")
+        raise RuntimeError("条件を満たす投稿案がありませんでした（#PR 付き・URL込みで280以内）")
     out = {"x_posts": posts, "ad_headlines": sns.get("ad_headlines", []), "slug": slug, "created": today()}
     path = write_json(SNS_DIR / f"{slug}.json", out)
     print(f"[制作] SNS案 {len(posts)} 件: content/sns/{slug}.json")

@@ -12,6 +12,26 @@ import os
 from .config import ROOT, REPORTS_DIR, SNS_DIR, is_dry_run, load_config, today, write_json, write_text
 
 STATE = ROOT / "data" / "sns_posted.json"
+VALUE = ROOT / "data" / "sns_value_posts.json"  # リンクなし・案件名なしの役立つ投稿（ChatGPT 作成 → 検証済み）
+VALUE_EVERY = 3  # 3投稿に1回の割合で使う
+
+
+def _value_post(cfg: dict) -> tuple[int, str] | None:
+    """未投稿の役立つ投稿を1件返す。NG表現・広告リンク・URLを含むものは使わない。"""
+    import re
+
+    if not VALUE.exists():
+        return None
+    data = json.loads(VALUE.read_text(encoding="utf-8"))
+    for i, p in enumerate(data.get("posts", [])):
+        text = p.get("text", "")
+        if p.get("posted") or not text or "http" in text:
+            continue
+        if any(re.search(r["pattern"], text) for r in cfg["compliance"]["ng_patterns"]):
+            print(f"[販売] 役立つ投稿 #{i + 1} は NG 表現を含むため使いません")
+            continue
+        return i, text
+    return None
 
 
 def _post_x(text: str) -> str:
@@ -58,6 +78,20 @@ def run(max_posts: int = 1) -> int:
     items.sort(key=lambda x: x["n"])                      # 投稿回数が少ない記事を優先（安定ソート）
 
     queue, posted = [], 0
+    # 3投稿に1回は、リンクなしの役立つ投稿にする（宣伝ばかりにならないように）
+    total = sum(state["posts"].values()) + state.get("value_posted", 0)
+    vp = _value_post(cfg) if (live and state["posted_today"] < max_posts and total % VALUE_EVERY == VALUE_EVERY - 1) else None
+    if vp:
+        i, text = vp
+        pid = _post_x(text)
+        print(f"[販売] X に投稿（リンクなしの役立つ投稿 #{i + 1}）(id={pid})")
+        data = json.loads(VALUE.read_text(encoding="utf-8"))
+        data["posts"][i]["posted"] = day
+        write_json(VALUE, data)
+        state["value_posted"] = state.get("value_posted", 0) + 1
+        state["posted_today"] += 1
+        state["last_post_date"] = day
+        posted += 1
     for it in items:
         n, slug = it["n"], it["slug"]
         url = f"{base}/articles/{slug}.html?utm_source=x&utm_medium=social&utm_campaign={slug}&utm_content=v{n + 1}"
