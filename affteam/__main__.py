@@ -37,6 +37,9 @@ def main() -> int:
     sub.add_parser("build")
     sub.add_parser("sns")
     sub.add_parser("measure")
+    mt = sub.add_parser("metrics", help="GA4・Search Console・A8の数字を取得（Claude APIは使わない）")
+    mt.add_argument("--days", type=int, default=28)
+    mt.add_argument("--include-today", action="store_true")
     sub.add_parser("all")
     args = ap.parse_args()
     if args.dry_run:
@@ -68,6 +71,9 @@ def main() -> int:
         sns.run()
     elif args.cmd == "measure":
         measure.run()
+    elif args.cmd == "metrics":
+        from . import metrics
+        metrics.run(args.days, args.include_today)
     elif args.cmd == "all":
         research.run()
         plans = plan.run()

@@ -1,0 +1,39 @@
+# 計測データの取得だけを行う（Claude API は使わない・費用なし）
+name: 8. 計測データ取得
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "集計日数"
+        default: "28"
+      include_today:
+        description: "今日を含める（当日分は途中の値）"
+        type: choice
+        options: ["false", "true"]
+        default: "false"
+permissions:
+  contents: write
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - name: GA4 の鍵を一時ファイルに書き出す（ジョブ終了で消える）
+        env:
+          GA4_SA_KEY: ${{ secrets.GA4_SA_KEY }}
+        run: |
+          printf '%s' "$GA4_SA_KEY" > "$RUNNER_TEMP/ga4-key.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/ga4-key.json" >> "$GITHUB_ENV"
+      - name: 取得
+        env:
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
+        run: |
+          FLAG=""; [ "${{ github.event.inputs.include_today }}" = "true" ] && FLAG="--include-today"
+          python -m affteam metrics --days "${{ github.event.inputs.days }}" $FLAG
+      - run: |
+          git config user.name "affiliate-team-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/metrics_snapshot.json && git commit -m "計測データ取得 $(date +%F)" && git push || echo "変更なし"
