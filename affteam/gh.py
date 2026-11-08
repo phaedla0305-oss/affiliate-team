@@ -55,3 +55,8 @@ def add_label(issue_url: str, label: str) -> None:
 def issue_body(number: int) -> str:
     out = _run(["issue", "view", str(number), "--json", "body"])
     return json.loads(out)["body"] if out else ""
+
+
+def open_issue_titles() -> set[str]:
+    out = _run(["issue", "list", "--state", "open", "--limit", "200", "--json", "title"])
+    return {i["title"] for i in json.loads(out)} if out else set()

@@ -28,6 +28,8 @@ jobs:
         env:
           GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # データが十分なときだけ Claude を1回呼ぶ（それ以上は止める）
+          AFF_MAX_API_CALLS: "1"
           # Copilot への割り当てはユーザー権限が必要なため、Copilot 契約者の PAT（AUTOMATION_TOKEN）を使う
           GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
       - run: |
