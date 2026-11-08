@@ -1,0 +1,23 @@
+{
+  "period": {
+    "start": "2026-11-02",
+    "end": "2026-11-08",
+    "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
+  },
+  "ga4": {
+    "status": "取得",
+    "pages": {},
+    "other_paths": {
+      "/affiliate-team/": 3,
+      "/affiliate-team/articles/cafe-free-wifi-safety-vpn.html": 2,
+      "/affiliate-team/articles/kisei-telework-ip-seigen-checklist.html": 1
+    },
+    "ad_events": []
+  },
+  "search_console": {
+    "status": "未取得（Search Console API 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Google Search Console API has not been used in project 990647507198 before or it is disabled. Enable it by visiting https://console.developers.google.co）"
+  },
+  "a8": {
+    "status": "未取得（A8の成果CSVがない）"
+  }
+}
