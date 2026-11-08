@@ -15,7 +15,7 @@
     "ad_events": []
   },
   "search_console": {
-    "status": "未取得（Search Console API 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Google Search Console API has not been used in project 990647507198 before or it is disabled. Enable it by visiting https://console.developers.google.co）"
+    "status": "未取得（Search Console API 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'https://phaedla0305-oss.github.io/zaitaku-toolbox/'. See also: https://support.google.com/webmasters/）"
   },
   "a8": {
     "status": "未取得（A8の成果CSVがない）"
