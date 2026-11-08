@@ -1,0 +1,85 @@
+{
+  "period": {
+    "start": "2026-11-01",
+    "end": "2026-11-07",
+    "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
+  },
+  "sources": {
+    "ga4": "取得",
+    "search_console": "取得",
+    "a8": "未取得（A8の成果CSVがない）"
+  },
+  "rows": [
+    {
+      "slug": "cafe-free-wifi-safety-vpn",
+      "title": "カフェのフリーWi-Fiは危険？在宅ワーカーの安全対策とVPNの選び方",
+      "program_id": "myip",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 0,
+      "users": 0,
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "URL is unknown to Google",
+      "top_queries": []
+    },
+    {
+      "slug": "freelance-kotei-ip-hitsuyou-mail-template",
+      "title": "フリーランスに固定IPは必要？不要な条件とIP登録依頼メール例文",
+      "program_id": "myip",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 0,
+      "users": 0,
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "URL is unknown to Google",
+      "top_queries": []
+    },
+    {
+      "slug": "kisei-telework-ip-seigen-checklist",
+      "title": "帰省先テレワークでIP制限に入れない？出発前チェックリスト",
+      "program_id": "myip",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 0,
+      "users": 0,
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "Submitted and indexed",
+      "top_queries": []
+    },
+    {
+      "slug": "zaitaku-home-router-erabikata",
+      "title": "在宅ワークにホームルーターは向いている？光回線・テザリングとの使い分けと契約前チェックリスト",
+      "program_id": "gmo-homewifi",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 0,
+      "users": 0,
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "Submitted and indexed",
+      "top_queries": []
+    }
+  ],
+  "revenue": null,
+  "conversions": null,
+  "candidates": []
+}
