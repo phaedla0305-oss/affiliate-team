@@ -1,5 +1,6 @@
 ﻿# X（旧Twitter）の API キー4つを GitHub Secrets に登録する。
 # 入力した文字は画面に表示されず、ログにも残らない。
+param([string[]]$Only)
 $repo = "phaedla0305-oss/zaitaku-toolbox"
 $gh = 'C:\Program Files\GitHub CLI\gh.exe'
 $items = @(
@@ -11,13 +12,18 @@ $items = @(
 Write-Host "X 開発者ポータルの「Keys and tokens」から、表示された順にコピーして貼り付けてください。"
 Write-Host "（貼り付けても画面には何も表示されません。貼り付けたら Enter）"
 Write-Host ""
+if ($Only) { $items = $items | Where-Object { $Only -contains $_.Name } }
 foreach ($it in $items) {
-    $sec = Read-Host -AsSecureString "$($it.Label) を貼り付け"
-    $plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
-    if ([string]::IsNullOrWhiteSpace($plain)) { Write-Host "空のため中止しました"; exit 1 }
+    $plain = ""
+    for ($try = 1; $try -le 5 -and [string]::IsNullOrWhiteSpace($plain); $try++) {
+        $sec = Read-Host -AsSecureString "$($it.Label) を貼り付け"
+        $plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
+        if ([string]::IsNullOrWhiteSpace($plain)) { Write-Host "  空でした（コピーに改行が含まれていた可能性があります）。もう一度貼り付けてください。" }
+    }
+    if ([string]::IsNullOrWhiteSpace($plain)) { Write-Host "入力がないため中止しました"; exit 1 }
     $plain.Trim() | & $gh secret set $it.Name -R $repo
     if ($LASTEXITCODE -ne 0) { Write-Host "$($it.Name) の登録に失敗しました"; exit 1 }
     $plain = $null
 }
 Write-Host ""
-Write-Host "4つとも登録しました。チャットに戻って「登録完了」と送ってください。"
+Write-Host "登録しました。チャットに戻って「登録完了」と送ってください。"
