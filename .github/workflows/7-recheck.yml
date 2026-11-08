@@ -17,6 +17,8 @@ jobs:
       GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       PR: ${{ github.event.inputs.pr }}
+      # 1回の再チェックで使う Claude API 呼び出しの上限（レビュー1・修正1・再レビュー1）
+      AFF_MAX_API_CALLS: "3"
     steps:
       - uses: actions/checkout@v4
         with:

@@ -27,6 +27,22 @@ SENSITIVE = {
 }
 
 
+_CALLS = {"n": 0}
+
+
+class ApiLimitError(RuntimeError):
+    """AFF_MAX_API_CALLS（1プロセスあたりのAPI呼び出し上限）を超えた。"""
+
+
+def _count_call(kind: str) -> None:
+    """API 呼び出し回数を数え、上限を超えたら止める（ドライランは数えない）。"""
+    limit = int(os.getenv("AFF_MAX_API_CALLS", "0") or 0)
+    if limit and _CALLS["n"] >= limit:
+        raise ApiLimitError(f"API呼び出しの上限（{limit}回）に達したため停止しました")
+    _CALLS["n"] += 1
+    print(f"[API] {kind} 呼び出し #{_CALLS['n']}" + (f" / 上限 {limit}" if limit else ""))
+
+
 class SensitiveDataError(RuntimeError):
     """送信を止めた。中身は表示せず種類だけ伝える（ログからの漏洩を防ぐ）。"""
 
@@ -59,6 +75,7 @@ def claude(system: str, prompt: str, *, effort: str = "high", stub: str = "", we
     texts: list[str] = []
     # 長文生成になるのでストリーミング。拒否時は fallbacks="default" で自動的に別モデルへ回す
     for _ in range(6):
+        _count_call("Claude")
         with client.beta.messages.stream(
             model=CLAUDE_MODEL,
             max_tokens=64000,
@@ -70,6 +87,10 @@ def claude(system: str, prompt: str, *, effort: str = "high", stub: str = "", we
             **extra,
         ) as stream:
             resp = stream.get_final_message()
+        u = resp.usage
+        print(f"[API] Claude 使用トークン: 入力 {u.input_tokens} / 出力 {u.output_tokens}"
+              f" / キャッシュ読込 {getattr(u, 'cache_read_input_tokens', 0) or 0}"
+              f" / Web検索 {getattr(getattr(u, 'server_tool_use', None), 'web_search_requests', 0) or 0}回")
         texts += [b.text for b in resp.content if b.type == "text"]
         if resp.stop_reason == "pause_turn":  # 検索が長引いたときは続きを依頼する
             messages.append({"role": "assistant", "content": resp.content})
@@ -88,6 +109,7 @@ def chatgpt(system: str, prompt: str, *, stub: str = "") -> str:
         return stub
     from openai import OpenAI
 
+    _count_call("ChatGPT")
     client = OpenAI()  # OPENAI_API_KEY を環境変数から読む
     resp = client.responses.create(model=OPENAI_MODEL, instructions=system, input=prompt)
     return resp.output_text

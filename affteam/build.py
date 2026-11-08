@@ -27,6 +27,8 @@ a{color:var(--accent)}.cta{display:inline-block;background:var(--accent);color:#
 .meta{color:var(--muted);font-size:14px}ul.list{padding:0;list-style:none}ul.list li{padding:12px 0;border-bottom:1px solid var(--line)}
 table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
 .toc,.related{background:var(--box);border-radius:10px;padding:12px 18px;margin:24px 0}.toc ul{margin:0;padding-left:1.2em}.toc>p,.related>p{margin:0 0 4px;font-weight:700}
+pre{background:var(--box);border-radius:8px;padding:12px;overflow-x:auto;font-size:13px;line-height:1.6;white-space:pre}code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}img{max-width:100%;height:auto}
+.next{border-left:4px solid var(--accent);padding:4px 0 4px 12px;margin:20px 0}
 footer{color:var(--muted);font-size:13px;padding:40px 16px}
 """
 
@@ -34,9 +36,14 @@ footer{color:var(--muted);font-size:13px;padding:40px 16px}
 def _ga(ga4_id: str) -> str:
     if not ga4_id:
         return "<script>window.gtag=function(){};</script>"
-    return (f'<script async src="https://www.googletagmanager.com/gtag/js?id={ga4_id}"></script>'
-            f"<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}"
-            f"gtag('js',new Date());gtag('config','{ga4_id}');</script>")
+    # ?notrack=1 で開いた端末は以後計測しない（運営者・動作確認のアクセスを除外。?notrack=0 で解除）
+    return ("<script>(function(){var q=new URLSearchParams(location.search).get('notrack');"
+            "try{if(q==='1')localStorage.setItem('zt_notrack','1');if(q==='0')localStorage.removeItem('zt_notrack');"
+            "window.ztNoTrack=localStorage.getItem('zt_notrack')==='1'}catch(e){window.ztNoTrack=false}})();"
+            "window.dataLayer=window.dataLayer||[];window.gtag=function(){if(!window.ztNoTrack)dataLayer.push(arguments)};"
+            f"if(!window.ztNoTrack){{var s=document.createElement('script');s.async=1;"
+            f"s.src='https://www.googletagmanager.com/gtag/js?id={ga4_id}';document.head.appendChild(s);"
+            f"gtag('js',new Date());gtag('config','{ga4_id}')}}</script>")
 
 
 def _page(cfg: dict, title: str, desc: str, body: str, prefix: str, *, path: str = "",

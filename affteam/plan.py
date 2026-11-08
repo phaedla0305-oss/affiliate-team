@@ -35,7 +35,8 @@ def run() -> list[dict]:
     insights_path = REPORTS_DIR / "latest_insights.json"
     insights = insights_path.read_text(encoding="utf-8") if insights_path.exists() else "（まだ効果測定データなし）"
     programs = [{k: p[k] for k in ("id", "name", "reward", "rules")} for p in cfg["programs"]]
-    from .research import latest
+    from .research import _articles, latest
+    existing = _articles()  # 公開済み記事（重複企画を防ぐ）
     r = latest()
     research = {k: r.get(k) for k in ("keywords", "competitor_gaps", "title_patterns")} if r else "（調査データなし）"
 
@@ -53,7 +54,7 @@ def run() -> list[dict]:
     plans_raw = claude(
         render("system_claude"),
         render("plan", niche=cfg["niche"], target=cfg["target"], programs=programs, ideas=ideas,
-               insights=insights, research=research, n=str(cfg["plan"]["plans_per_run"])),
+               insights=insights, research=research, articles=existing, n=str(cfg["plan"]["plans_per_run"])),
         effort="high",
         stub=STUB_PLANS,
     )
