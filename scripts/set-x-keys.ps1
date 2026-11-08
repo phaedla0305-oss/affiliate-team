@@ -12,7 +12,11 @@ $items = @(
 Write-Host "X 開発者ポータルの「Keys and tokens」から、表示された順にコピーして貼り付けてください。"
 Write-Host "（貼り付けても画面には何も表示されません。貼り付けたら Enter）"
 Write-Host ""
-if ($Only) { $items = $items | Where-Object { $Only -contains $_.Name } }
+if ($Only) {
+    $names = $Only -join "," -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    $items = @($items | Where-Object { $names -contains $_.Name })
+}
+if ($items.Count -eq 0) { Write-Host "登録する項目が見つかりません。中止しました"; exit 1 }
 foreach ($it in $items) {
     $plain = ""
     for ($try = 1; $try -le 5 -and [string]::IsNullOrWhiteSpace($plain); $try++) {
@@ -26,4 +30,4 @@ foreach ($it in $items) {
     $plain = $null
 }
 Write-Host ""
-Write-Host "登録しました。チャットに戻って「登録完了」と送ってください。"
+Write-Host ("登録しました（" + (($items | ForEach-Object { $_.Name }) -join ", ") + "）。チャットに戻って「登録完了」と送ってください。")
