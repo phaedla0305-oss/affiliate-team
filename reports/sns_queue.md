@@ -16,6 +16,13 @@ https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/freelance-kotei-ip-hi
 https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/kisei-telework-ip-seigen-checklist.html?utm_source=x&utm_medium=social&utm_campaign=kisei-telework-ip-seigen-checklist&utm_content=v1
 ```
 
+## zaitaku-home-router-erabikata（案 v2）
+
+```
+Zoom公式の目安：1対1の720pは上り下り1.2Mbps、グループの1080pは上り3.8/下り3.0Mbps。契約前はエリア・速度制限・端末代・解約条件を確認。使い分け表つき。#広告
+https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/zaitaku-home-router-erabikata.html?utm_source=x&utm_medium=social&utm_campaign=zaitaku-home-router-erabikata&utm_content=v2
+```
+
 ## cafe-free-wifi-safety-vpn（案 v5）
 
 ```
