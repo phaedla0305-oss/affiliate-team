@@ -56,6 +56,7 @@ jobs:
           if [ "$GATE" = "success" ]; then
             gh pr merge "$URL" --squash --delete-branch
             echo "自動公開しました: $URL"
+            python -m affteam a8-notice --slug "$SLUG" || true
           else
             gh pr edit "$URL" --add-label needs-review --add-assignee "${{ github.repository_owner }}"
             gh pr comment "$URL" --body "⚠️ 自動公開を止めました。指摘事項（上記）を確認し、問題なければマージしてください。"

@@ -60,3 +60,23 @@ def issue_body(number: int) -> str:
 def open_issue_titles() -> set[str]:
     out = _run(["issue", "list", "--state", "open", "--limit", "200", "--json", "title"])
     return {i["title"] for i in json.loads(out)} if out else set()
+
+
+def a8_submit_notice(slug: str) -> None:
+    """記事が公開されたら、A8.net の「広告掲載URL管理」への提出依頼を Issue にする（人の作業）。"""
+    import re
+    from .config import ARTICLES_DIR, load_config, parse_front_matter, program_by_id
+
+    cfg = load_config()
+    md = (ARTICLES_DIR / f"{slug}.md").read_text(encoding="utf-8")
+    meta, body = parse_front_matter(md)
+    ids = sorted(set(re.findall(r"\[\[aff:([a-zA-Z0-9_-]+)", body)))
+    names = [(program_by_id(cfg, i) or {}).get("name", i) for i in ids]
+    url = f"{cfg['site']['url'].rstrip('/')}/articles/{slug}.html"
+    title = f"[A8提出] {meta.get('title', slug)[:40]}"
+    if title in open_issue_titles():
+        return
+    body_md = ("記事が公開されました。A8.net の「参加中プログラム」→ 各案件の「プログラム詳細」→「広告掲載URL管理」から、次のURLを提出してください。\n\n"
+               f"```\n{url}\n```\n\n提出先の案件：\n" + "\n".join(f"- [ ] {n}" for n in names) +
+               "\n\n提出したら、このIssueを閉じてください。")
+    create_issue(title, body_md, ["a8-url"])

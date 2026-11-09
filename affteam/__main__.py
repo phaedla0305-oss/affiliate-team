@@ -34,6 +34,8 @@ def main() -> int:
     g.add_argument("--slug", required=True)
     rv = sub.add_parser("review", help="チェック → 自動修正 → 再チェック → 公開判定（終了コード0=自動公開OK）")
     rv.add_argument("--slug", required=True)
+    an = sub.add_parser("a8-notice", help="公開した記事のA8提出依頼Issueを作る")
+    an.add_argument("--slug", required=True)
     sd = sub.add_parser("sns-draft", help="公開済み記事のSNS投稿案だけをChatGPTで作る")
     sd.add_argument("--slug", required=True)
     sub.add_parser("build")
@@ -67,6 +69,9 @@ def main() -> int:
         if not compliance.gate(args.slug) and compliance.fix(args.slug):
             compliance.run([args.slug])  # 修正後にもう一度だけチェック
         return 0 if compliance.gate(args.slug) else 2
+    elif args.cmd == "a8-notice":
+        from . import gh
+        gh.a8_submit_notice(args.slug)
     elif args.cmd == "sns-draft":
         produce.sns_draft(args.slug)
     elif args.cmd == "build":

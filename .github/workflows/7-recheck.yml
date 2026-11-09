@@ -53,4 +53,5 @@ jobs:
           if [ "$GATE" = "success" ]; then
             gh pr edit "$PR" --remove-label needs-review || true
             gh pr merge "$PR" --squash --delete-branch
+            python -m affteam a8-notice --slug "$SLUG" || true
           fi
