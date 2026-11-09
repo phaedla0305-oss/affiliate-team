@@ -18,7 +18,7 @@ keyword: "セカイVPN マイIP 違い どっち"
 
 | 目的 | 候補 | 理由（公式の記載から） |
 |---|---|---|
-| 取引先・自社システムのIP制限に、接続元のIPとして登録したい | **マイIP**（またはマイIPソフトイーサ版） | 日本の固定IPアドレスが1個割り当てられる（2026-11-07時点、公式サイトより） |
+| 取引先・自社システムのIP制限に、接続元のIPとして登録したい | **マイIP**（またはマイIPソフトイーサ版） | マイIPは日本の固定IPアドレスが1個、マイIPソフトイーサ版は1〜128個（月額1,320円×固定IPの数）割り当てられる（2026-11-07／11-09時点、公式サイトより） |
 | 日本・アメリカ・ドイツなど、国を選んでそのIPで接続したい | **セカイVPN** | 複数の国のVPNサーバーから選べる「IP共有型」のサービス（対応国は公式サイトで確認）（2026-11-09時点、[セカイVPN公式サイト](https://www.interlink.or.jp/service/sekaivpn/)より） |
 
 たとえば、取引先からCMS管理画面のIP制限について「接続元の固定IPを教えてほしい」と言われた場合、候補になるのはマイIPです。セカイVPNは、接続したVPNサーバーのIPアドレスを**ほかの利用者と共用**する仕組みです。
@@ -63,7 +63,7 @@ keyword: "セカイVPN マイIP 違い どっち"
 
 出典：
 - マイIP：2026-11-07時点、公式サイトより（[サービスページ](https://www.interlink.or.jp/service/myip/)、[料金](https://www.interlink.or.jp/service/myip/price.md?view)、[活用事例](https://www.interlink.or.jp/service/myip/case.html)、[よくある質問「マイIPは複数人で同時に利用できますか？」](https://faq.interlink.or.jp/faq2/View/md.aspx?id=1270&view)）<!-- FAQ・料金ページのリンク先URLの表示を確認 -->
-- セカイVPN：2026-11-09時点、公式サイトより（[サービスページ](https://www.interlink.or.jp/service/sekaivpn/)、[料金](https://www.interlink.or.jp/service/sekaivpn/price.html)）
+- セカイVPN：2026-11-09時点、公式サイトより（[サービスページ](https://www.interlink.or.jp/service/sekaivpn/)、[VPNかんたん選択ガイド](https://www.interlink.or.jp/service/vpn/)）
 
 選ぶときに見るべきなのは料金ではありません。**「固定IPが必要か」「日本以外の国のIPが必要か」**で決まります。
 
