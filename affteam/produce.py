@@ -58,6 +58,16 @@ def _plan_from_issue(number: int) -> dict:
     return extract_json(gh.issue_body(number))
 
 
+def _published() -> list[dict]:
+    """内部リンク用の公開済み記事一覧（相対リンク先とタイトル）。"""
+    from .config import parse_front_matter
+    out = []
+    for p in sorted(ARTICLES_DIR.glob("*.md")):
+        meta, _ = parse_front_matter(p.read_text(encoding="utf-8"))
+        out.append({"link": f"{p.stem}.html", "title": meta.get("title", p.stem)})
+    return out
+
+
 def run(plan_path: str | None = None, issue: int | None = None) -> Path:
     cfg = load_config()
     if issue:
@@ -74,7 +84,8 @@ def run(plan_path: str | None = None, issue: int | None = None) -> Path:
     article = claude(
         render("system_claude"),
         render("article", plan=plan, program=program, site=cfg["site"],
-               ng_rules=cfg["compliance"]["ng_patterns"], date=today(), experience_rule=experience_rule),
+               ng_rules=cfg["compliance"]["ng_patterns"], date=today(), experience_rule=experience_rule,
+               articles=_published()),
         effort="high",
         web_search=int(cfg.get("research", {}).get("article_searches", 6)),
         stub=_stub_article(plan),

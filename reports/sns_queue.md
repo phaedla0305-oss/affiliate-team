@@ -1,4 +1,4 @@
-# SNS 投稿キュー（2026-11-08）
+# SNS 投稿キュー（2026-11-09）
 
 手動投稿する場合はコピーして使ってください。
 
@@ -14,4 +14,11 @@ https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/freelance-kotei-ip-hi
 ```
 帰省先のWi‑Fiやテザリングで社内ツール入れる？情シス休みの年末年始ほど不安…。出発前に会社ルール確認とVPNテスト、当日困ったときの連絡フローまでまとめました。#PR
 https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/kisei-telework-ip-seigen-checklist.html?utm_source=x&utm_medium=social&utm_campaign=kisei-telework-ip-seigen-checklist&utm_content=v1
+```
+
+## cafe-free-wifi-safety-vpn（案 v5）
+
+```
+Before: なんとなく接続。After: HTTPS確認・自動接続オフ・必要ならVPN選定。作業スタイル別に判断できる内容。#PR
+https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/cafe-free-wifi-safety-vpn.html?utm_source=x&utm_medium=social&utm_campaign=cafe-free-wifi-safety-vpn&utm_content=v5
 ```

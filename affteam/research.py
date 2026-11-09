@@ -54,6 +54,9 @@ def run() -> dict:
     print(f"[調査] キーワード候補 {len(result.get('keywords', []))} 件 / 案件候補 {len(result.get('program_suggestions', []))} 件")
 
     sugg = result.get("program_suggestions", [])
+    if sugg and any(x.startswith("[案件候補]") for x in gh.open_issue_titles()):
+        print("[調査] 案件候補の Issue が未対応のまま開いているため、新しい Issue は作りません（候補は reports/research/latest.json に保存）")
+        sugg = []
     if sugg:
         body = "週次リサーチで、読者に合いそうな高単価案件の種類が見つかりました。ASP で探して提携できたら、案件情報をチャットで送ってください。\n\n"
         body += "\n".join(f"- [ ] **{s['category']}**（{s.get('asp', 'ASP不明')}）: {s['reason']} ／ 報酬の目安: {s.get('reward_hint', '要確認')}" for s in sugg)

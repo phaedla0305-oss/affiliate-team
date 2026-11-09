@@ -1,15 +1,23 @@
 {
   "period": {
     "start": "2026-11-02",
-    "end": "2026-11-08",
+    "end": "2026-11-09",
     "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
   },
   "ga4": {
     "status": "取得",
-    "pages": {},
+    "pages": {
+      "zaitaku-home-router-erabikata": {
+        "pageviews": 2,
+        "users": 1
+      }
+    },
     "other_paths": {
-      "/affiliate-team/": 3,
+      "/affiliate-team/": 4,
+      "/zaitaku-toolbox/": 3,
       "/affiliate-team/articles/cafe-free-wifi-safety-vpn.html": 2,
+      "/": 1,
+      "/affiliate-team/articles/freelance-kotei-ip-hitsuyou-mail-template.html": 1,
       "/affiliate-team/articles/kisei-telework-ip-seigen-checklist.html": 1
     },
     "ad_events": []
@@ -29,8 +37,8 @@
     "index": {
       "cafe-free-wifi-safety-vpn": "URL is unknown to Google",
       "freelance-kotei-ip-hitsuyou-mail-template": "URL is unknown to Google",
-      "kisei-telework-ip-seigen-checklist": "URL is unknown to Google",
-      "zaitaku-home-router-erabikata": "URL is unknown to Google"
+      "kisei-telework-ip-seigen-checklist": "Submitted and indexed",
+      "zaitaku-home-router-erabikata": "Submitted and indexed"
     }
   },
   "a8": {
