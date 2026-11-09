@@ -2,6 +2,13 @@
 
 手動投稿する場合はコピーして使ってください。
 
+## moving-fiber-waiting-telework-internet（案 v1）
+
+```
+引っ越し後に光回線がまだ…在宅会議どうする？4択（テザリング/ホームルーター/コワーキング/出社寄せ）を費用と手間で比較。VPN確認の要点も #PR
+https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/moving-fiber-waiting-telework-internet.html?utm_source=x&utm_medium=social&utm_campaign=moving-fiber-waiting-telework-internet&utm_content=v1
+```
+
 ## freelance-kotei-ip-hitsuyou-mail-template（案 v1）
 
 ```
