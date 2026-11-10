@@ -48,8 +48,12 @@ def run() -> dict:
             render("system_claude"), render("analyze", metrics=f, goal=cands), effort="medium",
             stub=json.dumps({"summary_md": "", "insights": []}, ensure_ascii=False)))
         insights = result.get("insights", [])[:5]
+    from . import apicost
+    cost = apicost.collect(f["period"]["start"], f["period"]["end"]) if not is_dry_run() else {"status": "未取得（ドライラン）"}
+    write_json(REPORTS_DIR / f"apicost_{d}.json", cost)
     learn = ("\n## 学び（Claude）\n" + "\n".join(f"- {i}" for i in insights) + "\n") if insights else ""
-    write_text(REPORTS_DIR / f"weekly_{d}.md", f"# 週次レポート {d}\n\n" + funnel.markdown(f, cands) + learn)
+    write_text(REPORTS_DIR / f"weekly_{d}.md", f"# 週次レポート {d}\n\n" + funnel.markdown(f, cands) + "\n"
+               + apicost.markdown(cost, f["period"]) + learn)
     if insights:
         write_json(REPORTS_DIR / "latest_insights.json", {"date": d, "insights": insights})
 
