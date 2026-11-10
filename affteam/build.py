@@ -27,7 +27,7 @@ a{color:var(--accent)}.cta{display:inline-block;background:var(--accent);color:#
 .meta{color:var(--muted);font-size:14px}ul.list{padding:0;list-style:none}ul.list li{padding:12px 0;border-bottom:1px solid var(--line)}
 table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
 .toc,.related{background:var(--box);border-radius:10px;padding:12px 18px;margin:24px 0}.toc ul{margin:0;padding-left:1.2em}.toc>p,.related>p{margin:0 0 4px;font-weight:700}
-pre{background:var(--box);border-radius:8px;padding:12px;overflow-x:auto;font-size:13px;line-height:1.6;white-space:pre}code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}img{max-width:100%;height:auto}
+pre{background:var(--box);border-radius:8px;padding:12px;overflow-x:auto;font-size:13px;line-height:1.6;white-space:pre}code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}img{max-width:100%;height:auto}main p img{display:block;width:min(100%,300px);margin:16px auto 6px;border:1px solid var(--line);border-radius:14px}.shot{text-align:center;font-size:13px;color:var(--muted);margin-top:0}
 .next{border-left:4px solid var(--accent);padding:4px 0 4px 12px;margin:20px 0}
 footer{color:var(--muted);font-size:13px;padding:40px 16px}
 """
@@ -101,6 +101,9 @@ def run() -> int:
         shutil.rmtree(SITE_DIR)
     write_text(SITE_DIR / "style.css", CSS)
     write_text(SITE_DIR / ".nojekyll", "")
+    img_src = ARTICLES_DIR.parent / "images"  # 記事で使う画像（content/images/ → _site/images/）
+    if img_src.exists():
+        shutil.copytree(img_src, SITE_DIR / "images")
 
     articles = []
     for path in sorted(ARTICLES_DIR.glob("*.md")):
