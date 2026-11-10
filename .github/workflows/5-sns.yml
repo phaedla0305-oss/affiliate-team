@@ -5,7 +5,7 @@ on:
     workflows: ["4. 公開"]
     types: [completed]
   schedule:
-    - cron: "0 3 * * *"   # 毎日 12:00 JST
+    - cron: "17 3 * * *"  # 毎日 12:17 JST（毎時0分は混雑して遅れやすいため）
   workflow_dispatch:
 permissions:
   contents: write
