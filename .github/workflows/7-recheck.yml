@@ -7,8 +7,16 @@ on:
       pr:
         description: "記事PRの番号"
         required: true
+      slugs:
+        description: "対象記事のslug（スペース区切り）。空ならブランチ名から判定"
+        default: ""
+      autofix:
+        description: "指摘を自動修正して再レビューする（false=レビュー1回のみ）"
+        type: choice
+        options: ["true", "false"]
+        default: "true"
       max_calls:
-        description: "Claude API 呼び出しの上限（1=レビューのみ、3=レビュー・自動修正・再レビュー）"
+        description: "Claude API 呼び出しの上限（この実行全体）"
         default: "3"
 permissions:
   contents: write
@@ -20,7 +28,7 @@ jobs:
       GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       PR: ${{ github.event.inputs.pr }}
-      # 1回の再チェックで使う Claude API 呼び出しの上限（レビュー1・修正1・再レビュー1）
+      # この実行で使う Claude API 呼び出しの上限
       AFF_MAX_API_CALLS: ${{ github.event.inputs.max_calls || '3' }}
     steps:
       - uses: actions/checkout@v4
@@ -29,10 +37,13 @@ jobs:
           fetch-depth: 0
       - name: PRのブランチに切り替え
         id: pr
+        env:
+          SLUGS_IN: ${{ github.event.inputs.slugs }}
         run: |
           BR=$(gh pr view "$PR" --json headRefName --jq .headRefName)
           git fetch origin "$BR" main && git checkout "$BR"
-          echo "slug=${BR#content/}" >> "$GITHUB_OUTPUT"
+          S="${SLUGS_IN:-${BR#content/}}"
+          echo "slugs=$S" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt
@@ -41,20 +52,35 @@ jobs:
           git config user.name "affiliate-team-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git merge --no-edit origin/main || { git merge --abort || true; echo "main の取り込みで競合（そのまま続行）"; }
-      - name: 法令・規約チェック → 自動修正 → 再チェック → 公開判定（機械 + Claude）
+      - name: 法令・規約チェック（機械 + Claude）と公開判定
         id: gate
         continue-on-error: true
-        run: python -m affteam review --slug "${{ steps.pr.outputs.slug }}"
+        env:
+          SLUGS: ${{ steps.pr.outputs.slugs }}
+          AUTOFIX: ${{ github.event.inputs.autofix || 'true' }}
+        run: |
+          rc=0
+          for s in $SLUGS; do
+            if [ "$AUTOFIX" = "true" ]; then
+              python -m affteam review --slug "$s" || rc=1
+            else
+              python -m affteam check --slug "$s" || true
+              python -m affteam gate --slug "$s" || rc=1
+            fi
+          done
+          exit $rc
       - name: 結果を反映
         env:
-          SLUG: ${{ steps.pr.outputs.slug }}
+          SLUGS: ${{ steps.pr.outputs.slugs }}
           GATE: ${{ steps.gate.outcome }}
         run: |
-          git add content/articles reports/compliance && git commit -m "再チェック・自動修正: $SLUG" || true
+          git add content/articles reports/compliance && git commit -m "再チェック: $SLUGS" || true
           git push || true
-          gh pr comment "$PR" --body "$(printf '## 再チェック結果\n\n%s' "$(cat reports/compliance/$SLUG.md)")"
+          BODY="## 再チェック結果"
+          for s in $SLUGS; do BODY="$BODY"$'\n\n'"$(cat reports/compliance/$s.md)"; done
+          gh pr comment "$PR" --body "$BODY"
           if [ "$GATE" = "success" ]; then
             gh pr edit "$PR" --remove-label needs-review || true
             gh pr merge "$PR" --squash --delete-branch
-            python -m affteam a8-notice --slug "$SLUG" || true
+            for s in $SLUGS; do python -m affteam a8-notice --slug "$s" || true; done
           fi
