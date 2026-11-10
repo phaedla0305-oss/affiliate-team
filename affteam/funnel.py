@@ -49,7 +49,7 @@ def build(snap: dict) -> dict:
         rows.append({
             "slug": slug, "title": meta["title"], "program_id": meta["program_id"],
             "impressions": imp, "search_clicks": sclicks, "search_ctr": _rate(sclicks, imp),
-            "pageviews": pv, "users": users,
+            "pageviews": pv, "users": users, "sources": p.get("sources", {}) if ga_ok else None,
             "ad_clicks": clicks, "ad_click_rate": _rate(clicks, pv),
             "ad_click_users": click_users, "user_click_rate": _rate(click_users, users),
             "redirects": redirects,
@@ -113,6 +113,26 @@ def markdown(f: dict, cands: list[dict]) -> str:
         lines.append(f"| {r['title'][:24]} | {_fmt(r['impressions'])} | {_fmt(r['search_clicks'])} | {_fmt(r['search_ctr'], True)} | "
                      f"{_fmt(r['pageviews'])} | {_fmt(r['users'])} | {_fmt(r['ad_clicks'])} | {_fmt(r['ad_click_rate'], True)} | "
                      f"{_fmt(r['user_click_rate'], True)} | {r['index'] or '未取得'} |")
+    # 案件ごとの記事PV（総PVではなく、その案件の広告を載せた記事のPVだけを合計）
+    progs: dict[str, dict] = {}
+    for r in f["rows"]:
+        g = progs.setdefault(r["program_id"] or "（なし）", {"articles": 0, "pageviews": None, "ad_clicks": None})
+        g["articles"] += 1
+        for k in ("pageviews", "ad_clicks"):
+            if r[k] is not None:
+                g[k] = (g[k] or 0) + r[k]
+    lines += ["", "### 案件ごと（その案件の広告を載せた記事だけを集計）", "",
+              "| 案件 | 記事数 | 記事表示 | 広告クリック | 表示あたり |", "|---|---|---|---|---|"]
+    for pid, g in progs.items():
+        lines.append(f"| {pid} | {g['articles']} | {_fmt(g['pageviews'])} | {_fmt(g['ad_clicks'])} | "
+                     f"{_fmt(_rate(g['ad_clicks'], g['pageviews']), True)} |")
+    srcs: dict[str, int] = {}
+    for r in f["rows"]:
+        for ch, v in (r.get("sources") or {}).items():
+            srcs[ch] = srcs.get(ch, 0) + v
+    lines += ["", "### 記事表示の流入元（GA4の既定チャネル）", "",
+              ("、".join(f"{ch} {v}回" for ch, v in sorted(srcs.items(), key=lambda x: -x[1])) or
+               ("データなし" if f["sources"]["ga4"] == "取得" else "未取得"))]
     lines += ["", f"確定報酬（A8）：{_fmt(f['revenue'])}{'円' if f['revenue'] is not None else ''}"
               f" ／ 成果件数：{_fmt(f['conversions'])}", "",
               "- 広告クリック＝記事内ボタンの affiliate_click イベント。中継ページ到達（affiliate_redirect）は別集計で、合算しない",

@@ -62,6 +62,12 @@ def ga4(start: str, end: str) -> dict:
                 p["users"] += int(users)  # パスごとの利用者数の合計（同じ人が複数パスにいると重複しうる）
             else:
                 other_paths[path] = int(pv)  # トップ・旧URL・中継ページなど
+        # 流入元（GA4 の既定チャネル：Organic Search／Direct／Organic Social など）を記事ごとに
+        for (path, ch), (pv,) in run(["pagePath", "sessionDefaultChannelGroup"], ["screenPageViews"]):
+            s = _slug(path)
+            if s and "/zaitaku-toolbox/" in path and s in pages:
+                src = pages[s].setdefault("sources", {})
+                src[ch] = src.get(ch, 0) + int(pv)
         clicks = {}
         for event in ("affiliate_click", "affiliate_redirect"):
             for (article, pid), (cnt, users) in run(["customEvent:article", "customEvent:program_id"],
