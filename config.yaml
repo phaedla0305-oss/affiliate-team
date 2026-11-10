@@ -28,6 +28,13 @@ plan:
   ideas_per_run: 10   # ChatGPT が出すアイデア数
   plans_per_run: 2    # Claude が企画書に落とす本数
 
+# 自動企画（Claude API を使う）の運用スケジュール
+schedule:
+  # この日より前は、定時の自動企画を止める（11月は API 費用を抑える）
+  pause_until: "2026-12-01"
+  # この日以降は加速：月曜と木曜の週2回 × 2本 ＝ 週4本（調査は月曜のみ）
+  accelerate_from: "2026-12-01"
+
 # ASP で提携済みの案件（url は ASP 管理画面で発行した広告リンクを貼る）
 programs:
   - id: myip

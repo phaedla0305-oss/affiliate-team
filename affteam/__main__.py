@@ -22,6 +22,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(prog="affteam")
     ap.add_argument("--dry-run", action="store_true", help="APIを呼ばずスタブで動かす")
     sub = ap.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("schedule-check", help="定時の自動企画を実行するか判定（GITHUB_OUTPUT に出力）")
     sub.add_parser("research")
     sub.add_parser("plan")
     p = sub.add_parser("produce")
@@ -52,7 +53,10 @@ def main() -> int:
     from . import build, compliance, measure, plan, produce, research, sns
     from .config import PLANS_DIR, today
 
-    if args.cmd == "research":
+    if args.cmd == "schedule-check":
+        from . import schedule
+        schedule.run()
+    elif args.cmd == "research":
         research.run()
     elif args.cmd == "plan":
         plan.run()
