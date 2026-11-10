@@ -70,6 +70,9 @@ def a8_submit_notice(slug: str) -> None:
     cfg = load_config()
     md = (ARTICLES_DIR / f"{slug}.md").read_text(encoding="utf-8")
     meta, body = parse_front_matter(md)
+    if meta.get("updated"):  # 既存記事の更新（URLは提出済みのまま変わらない）なら依頼しない
+        print(f"[A8] {slug} は既存記事の更新のため、提出依頼は作りません")
+        return
     ids = sorted(set(re.findall(r"\[\[aff:([a-zA-Z0-9_-]+)", body)))
     names = [(program_by_id(cfg, i) or {}).get("name", i) for i in ids]
     url = f"{cfg['site']['url'].rstrip('/')}/articles/{slug}.html"
