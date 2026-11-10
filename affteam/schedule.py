@@ -25,8 +25,37 @@ def decide(event: str, now: dt.datetime | None = None) -> dict:
     return {"run": wd in (0, 3), "research": wd == 0, "reason": "加速（月曜・木曜）"}
 
 
+def budget_check(now: dt.datetime | None = None) -> dict:
+    """当月の推定 API 費用（実行ログから集計）＋次の実行の見込み額が、月の予算を超えないか。"""
+    from . import apicost
+    now = now or (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=9))
+    b = load_config().get("budget", {})
+    cap, per_run = float(b.get("usd_per_month", 0) or 0), float(b.get("usd_per_plan_run", 0) or 0)
+    if not cap:
+        return {"ok": True, "reason": "予算上限なし"}
+    month_start = now.date().replace(day=1).isoformat()
+    c = apicost.collect(month_start, now.date().isoformat())
+    if c.get("status") != "取得":
+        # 集計できないときは安全側に倒して止める
+        return {"ok": False, "reason": f"当月の API 費用を集計できないため停止（{c.get('status')}）"}
+    used = c["usd_estimate_total"]
+    ok = used + per_run <= cap
+    return {"ok": ok, "used": used, "cap": cap,
+            "reason": f"当月の推定 ${used:.2f} ＋ 今回の見込み ${per_run:.2f} {'≦' if ok else '＞'} 上限 ${cap:.2f}"}
+
+
 def run() -> dict:
     d = decide(os.getenv("GITHUB_EVENT_NAME", "workflow_dispatch"))
+    if d["run"] and os.getenv("GITHUB_EVENT_NAME") == "schedule":
+        bc = budget_check()
+        print(f"[予算] {bc['reason']}")
+        if not bc["ok"]:
+            d.update(run=False, research=False, reason="月の予算上限のため停止：" + bc["reason"])
+            from . import gh
+            title = f"[予算] {dt.date.today():%Y-%m} の自動企画を停止しました"
+            if title not in gh.open_issue_titles():
+                body = bc["reason"] + "\n\n続ける場合は config.yaml の budget を見直すか、手動で「1. 企画」を実行してください。"
+                gh.create_issue(title, body, ["budget"])
     print(f"[予定] 実行={d['run']} 調査={d['research']} ／ {d['reason']}")
     out = os.getenv("GITHUB_OUTPUT")
     if out:

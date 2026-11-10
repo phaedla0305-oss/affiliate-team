@@ -15,6 +15,7 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: read   # 当月の API 費用を実行ログから集計するため
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -28,6 +29,9 @@ jobs:
       - name: 実行するか判定（休止期間・曜日）
         id: decide
         run: python -m affteam schedule-check
+        env:
+          ACTIONS_READ_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
       - name: マーケットリサーチ（Claude + Web検索）
         if: steps.decide.outputs.research == 'true'
         run: python -m affteam research
