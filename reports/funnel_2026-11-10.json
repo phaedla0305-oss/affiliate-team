@@ -1,0 +1,139 @@
+{
+  "period": {
+    "start": "2026-11-03",
+    "end": "2026-11-09",
+    "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
+  },
+  "sources": {
+    "ga4": "取得",
+    "search_console": "取得",
+    "a8": "未取得（A8の成果CSVがない）"
+  },
+  "rows": [
+    {
+      "slug": "cafe-free-wifi-safety-vpn",
+      "title": "カフェのフリーWi-Fiは危険？在宅ワーカーの安全対策とVPNの選び方",
+      "program_id": "myip",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 0,
+      "users": 0,
+      "sources": {},
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "URL is unknown to Google",
+      "top_queries": []
+    },
+    {
+      "slug": "freelance-kotei-ip-hitsuyou-mail-template",
+      "title": "フリーランスに固定IPは必要？不要な条件とIP登録依頼メール例文",
+      "program_id": "myip",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 0,
+      "users": 0,
+      "sources": {},
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "URL is unknown to Google",
+      "top_queries": []
+    },
+    {
+      "slug": "kisei-telework-ip-seigen-checklist",
+      "title": "帰省先テレワークでIP制限に入れない？出発前チェックリスト",
+      "program_id": "myip",
+      "impressions": 1,
+      "search_clicks": 0,
+      "search_ctr": 0.0,
+      "pageviews": 0,
+      "users": 0,
+      "sources": {},
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "Submitted and indexed",
+      "top_queries": [
+        {
+          "query": "ﾘﾓｰﾄ帰省",
+          "impressions": 1,
+          "clicks": 0,
+          "position": 15
+        }
+      ]
+    },
+    {
+      "slug": "moving-fiber-waiting-telework-internet",
+      "title": "引っ越しで光回線の開通待ち、テレワークは？つなぎ回線4択比較",
+      "program_id": "gmo-homewifi",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 1,
+      "users": 1,
+      "sources": {
+        "Organic Social": 1
+      },
+      "ad_clicks": 0,
+      "ad_click_rate": 0.0,
+      "ad_click_users": 0,
+      "user_click_rate": 0.0,
+      "redirects": 0,
+      "index": "Submitted and indexed",
+      "top_queries": []
+    },
+    {
+      "slug": "sekai-vpn-myip-difference",
+      "title": "【2026年版】セカイVPNとマイIPの違い 用途別の選び方と不要な人",
+      "program_id": "myip",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 0,
+      "users": 0,
+      "sources": {},
+      "ad_clicks": 0,
+      "ad_click_rate": null,
+      "ad_click_users": 0,
+      "user_click_rate": null,
+      "redirects": 0,
+      "index": "Submitted and indexed",
+      "top_queries": []
+    },
+    {
+      "slug": "zaitaku-home-router-erabikata",
+      "title": "在宅ワークにホームルーターは向いている？光回線・テザリングとの使い分けと契約前チェックリスト",
+      "program_id": "gmo-homewifi",
+      "impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": null,
+      "pageviews": 3,
+      "users": 2,
+      "sources": {
+        "Direct": 2,
+        "Organic Social": 1
+      },
+      "ad_clicks": 0,
+      "ad_click_rate": 0.0,
+      "ad_click_users": 0,
+      "user_click_rate": 0.0,
+      "redirects": 0,
+      "index": "Submitted and indexed",
+      "top_queries": []
+    }
+  ],
+  "revenue": null,
+  "conversions": null,
+  "pending_conversions": null,
+  "pending_revenue": null,
+  "candidates": []
+}
