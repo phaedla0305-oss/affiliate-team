@@ -56,10 +56,13 @@ def build(snap: dict) -> dict:
             "index": (s.get("index") or {}).get(slug) if sc_ok else None,
             "top_queries": sorted(sc.get("queries", []), key=lambda q: -q["impressions"])[:3] if sc_ok else [],
         })
-    revenue = a8.get("revenue") if a8.get("status") == "取得" else None
-    conversions = a8.get("conversions") if a8.get("status") == "取得" else None
+    ok = a8.get("status") == "取得"
+    revenue = a8.get("revenue") if ok else None
+    conversions = a8.get("conversions") if ok else None
+    pending = (a8.get("pending_conversions"), a8.get("pending_revenue")) if ok else (None, None)
     return {"period": snap["period"], "sources": {k: snap[k]["status"] for k in ("ga4", "search_console", "a8")},
-            "rows": rows, "revenue": revenue, "conversions": conversions}
+            "rows": rows, "revenue": revenue, "conversions": conversions,
+            "pending_conversions": pending[0], "pending_revenue": pending[1]}
 
 
 def _title_ideas(slug: str) -> list[str]:
@@ -133,8 +136,9 @@ def markdown(f: dict, cands: list[dict]) -> str:
     lines += ["", "### 記事表示の流入元（GA4の既定チャネル）", "",
               ("、".join(f"{ch} {v}回" for ch, v in sorted(srcs.items(), key=lambda x: -x[1])) or
                ("データなし" if f["sources"]["ga4"] == "取得" else "未取得"))]
-    lines += ["", f"確定報酬（A8）：{_fmt(f['revenue'])}{'円' if f['revenue'] is not None else ''}"
-              f" ／ 成果件数：{_fmt(f['conversions'])}", "",
+    lines += ["", f"確定報酬（A8）：{_fmt(f['revenue'])}{'円' if f['revenue'] is not None else ''}（{_fmt(f['conversions'])}件）"
+              f" ／ 承認待ち（発生）：{_fmt(f.get('pending_revenue'))}{'円' if f.get('pending_revenue') is not None else ''}"
+              f"（{_fmt(f.get('pending_conversions'))}件） ※収益の評価は確定のみ。入金は別管理", "",
               "- 広告クリック＝記事内ボタンの affiliate_click イベント。中継ページ到達（affiliate_redirect）は別集計で、合算しない",
               "- 利用者数は記事ごとの合計のため、複数記事を読んだ人は重複して数えられる", "",
               "## 改善候補（実績にもとづく・最大3件）", ""]

@@ -130,12 +130,23 @@ def _article_urls(site: str) -> list[str]:
 
 # ---------------- A8（CSV） ----------------
 def a8(start: str, end: str) -> dict:
+    """A8 の成果。status 列（発生／確定／否認／入金）で分けて集計する。
+    status 列がない古い形式は「確定」とみなす。期間は成果の発生日（date）で区切る。"""
     from .measure import _num, _read
     rows = [r for r in _read("asp") if start <= r.get("date", "") <= end]
     if not rows:
         return {"status": "未取得（A8の成果CSVがない）"}
-    return {"status": "取得", "conversions": int(sum(_num(r.get("conversions")) for r in rows)),
-            "revenue": int(sum(_num(r.get("revenue")) for r in rows))}
+    by = {}
+    for r in rows:
+        st = (r.get("status") or "確定").strip()
+        b = by.setdefault(st, {"conversions": 0, "revenue": 0})
+        b["conversions"] += int(_num(r.get("conversions")))
+        b["revenue"] += int(_num(r.get("revenue")))
+    conf = by.get("確定", {"conversions": 0, "revenue": 0})
+    return {"status": "取得", "by_status": by,
+            "conversions": conf["conversions"], "revenue": conf["revenue"],  # 収益の評価は確定のみ
+            "pending_conversions": by.get("発生", {}).get("conversions", 0),
+            "pending_revenue": by.get("発生", {}).get("revenue", 0)}
 
 
 def snapshot(days: int = 28, include_today: bool = False) -> dict:

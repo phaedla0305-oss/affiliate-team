@@ -1,1 +1,25 @@
-ASP からエクスポートした CSV をここに置く（列: date,program_id,slug,clicks,conversions,revenue）。形式は ../sample/asp/ を参照。
+# A8.net の成果データの置き場所
+
+成果が出始めたら、ここに CSV を置きます。週次レポート（毎週月曜）が自動で集計します。
+
+## 列（1行＝1日×1案件×1状態）
+```
+date,program_id,slug,status,clicks,conversions,revenue
+2026-12-01,gmo-homewifi,zaitaku-home-router-erabikata,発生,12,1,5100
+2026-12-01,myip,,確定,8,1,1000
+```
+
+| 列 | 内容 |
+|---|---|
+| date | 成果が発生した日（YYYY-MM-DD） |
+| program_id | config.yaml の案件ID（myip、gmo-homewifi など） |
+| slug | 記事が分かる場合だけ記事のslug。分からなければ空欄 |
+| status | **発生**（承認待ち）／**確定**／**否認**／**入金** のどれか |
+| clicks | その日のクリック数（分からなければ空欄） |
+| conversions | 成果件数 |
+| revenue | 報酬額（円） |
+
+- 収益の評価は「確定」だけで行い、「発生」は承認待ちとして別に表示します
+- 「入金」は、実際に口座に振り込まれた分の記録用です（経費を引いた利益とは別）
+- A8.net の管理画面からダウンロードした CSV の形式が違う場合は、そのファイルを Claude に渡せば、この形式に変換します
+- ファイル名は自由です（例: `a8_2026-12.csv`）。同じ成果を2つのファイルに入れないでください
