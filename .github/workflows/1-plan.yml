@@ -39,4 +39,4 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/plans reports/research && git commit -m "調査・企画: $(date +%F)" && git push || echo "変更なし"
+          git add data/plans reports/research && git commit -m "調査・企画: $(date +%F)" && { for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done; } || echo "変更なし（または送信失敗）"
