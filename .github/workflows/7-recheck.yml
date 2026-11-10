@@ -16,7 +16,7 @@ on:
         options: ["true", "false"]
         default: "true"
       max_calls:
-        description: "Claude API 呼び出しの上限（この実行全体）"
+        description: "Claude API 呼び出しの上限（記事1本あたり）"
         default: "3"
 permissions:
   contents: write
@@ -28,7 +28,7 @@ jobs:
       GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN || github.token }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       PR: ${{ github.event.inputs.pr }}
-      # この実行で使う Claude API 呼び出しの上限
+      # Claude API 呼び出しの上限（記事1本あたり。python の1回の実行ごとに数える）
       AFF_MAX_API_CALLS: ${{ github.event.inputs.max_calls || '3' }}
     steps:
       - uses: actions/checkout@v4
