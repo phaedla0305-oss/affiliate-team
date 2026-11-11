@@ -146,7 +146,10 @@ def markdown(f: dict, cands: list[dict]) -> str:
             lines += ["", "### 観測中の検索語（記事は変えず、推移だけを見る）", "",
                       "| 検索語 | 記事 | 初めて見た日 | 今期の表示 | 今期のクリック | 平均順位 |", "|---|---|---|---|---|---|"]
             for w in watch:
-                hit = [q for r in f["rows"] if r["slug"] == w["article"] for q in r.get("all_queries", []) if q["query"] == w["query"]]
+                import unicodedata as _u
+                norm = lambda s: _u.normalize("NFKC", s).replace(" ", "").lower()  # 半角カナ・全角英数・空白の違いを吸収
+                hit = [q for r in f["rows"] if r["slug"] == w["article"] for q in r.get("all_queries", [])
+                       if norm(q["query"]) == norm(w["query"])]
                 sc_ok = f["sources"]["search_console"] == "取得"
                 imp = sum(q["impressions"] for q in hit) if sc_ok else None
                 clk = sum(q["clicks"] for q in hit) if sc_ok else None
