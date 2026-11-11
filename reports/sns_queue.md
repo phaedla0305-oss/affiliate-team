@@ -23,6 +23,13 @@ https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/freelance-kotei-ip-hi
 https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/kisei-telework-ip-seigen-checklist.html?utm_source=x&utm_medium=social&utm_campaign=kisei-telework-ip-seigen-checklist&utm_content=v1
 ```
 
+## sekai-vpn-myip-difference（案 v2）
+
+```
+申し込み前チェック3点：①固定IPが本当に必要？②取引先にIP登録OKか確認③会社規程の許可。用途別フローつき。#広告
+https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/sekai-vpn-myip-difference.html?utm_source=x&utm_medium=social&utm_campaign=sekai-vpn-myip-difference&utm_content=v2
+```
+
 ## zaitaku-home-router-erabikata（案 v2）
 
 ```
