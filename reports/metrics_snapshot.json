@@ -1,24 +1,42 @@
 {
   "period": {
     "start": "2026-11-02",
-    "end": "2026-11-10",
+    "end": "2026-11-11",
     "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
   },
   "ga4": {
     "status": "取得",
     "pages": {
-      "zaitaku-home-router-erabikata": {
-        "pageviews": 3,
-        "users": 2
+      "kisei-telework-ip-seigen-checklist": {
+        "pageviews": 11,
+        "users": 11,
+        "sources": {
+          "Direct": 6,
+          "Organic Search": 4,
+          "Organic Social": 1
+        }
       },
       "moving-fiber-waiting-telework-internet": {
-        "pageviews": 1,
-        "users": 1
+        "pageviews": 11,
+        "users": 10,
+        "sources": {
+          "Direct": 5,
+          "Organic Search": 4,
+          "Organic Social": 2
+        }
+      },
+      "zaitaku-home-router-erabikata": {
+        "pageviews": 3,
+        "users": 2,
+        "sources": {
+          "Direct": 2,
+          "Organic Social": 1
+        }
       }
     },
     "other_paths": {
+      "/zaitaku-toolbox/": 5,
       "/affiliate-team/": 4,
-      "/zaitaku-toolbox/": 4,
       "/affiliate-team/articles/cafe-free-wifi-safety-vpn.html": 2,
       "/": 1,
       "/affiliate-team/articles/freelance-kotei-ip-hitsuyou-mail-template.html": 1,
@@ -28,7 +46,20 @@
   },
   "search_console": {
     "status": "取得",
-    "pages": {},
+    "pages": {
+      "kisei-telework-ip-seigen-checklist": {
+        "impressions": 1,
+        "clicks": 0,
+        "queries": [
+          {
+            "query": "ﾘﾓｰﾄ帰省",
+            "impressions": 1,
+            "clicks": 0,
+            "position": 15
+          }
+        ]
+      }
+    },
     "sitemaps": [
       {
         "path": "https://phaedla0305-oss.github.io/zaitaku-toolbox/sitemap.xml",
@@ -42,8 +73,8 @@
       "cafe-free-wifi-safety-vpn": "URL is unknown to Google",
       "freelance-kotei-ip-hitsuyou-mail-template": "URL is unknown to Google",
       "kisei-telework-ip-seigen-checklist": "Submitted and indexed",
-      "moving-fiber-waiting-telework-internet": "URL is unknown to Google",
-      "sekai-vpn-myip-difference": "URL is unknown to Google",
+      "moving-fiber-waiting-telework-internet": "Submitted and indexed",
+      "sekai-vpn-myip-difference": "Submitted and indexed",
       "zaitaku-home-router-erabikata": "Submitted and indexed"
     }
   },
