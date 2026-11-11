@@ -6,6 +6,7 @@ on:
     types: [completed]
   schedule:
     - cron: "17 3 * * *"  # 毎日 12:17 JST（毎時0分は混雑して遅れやすいため）
+    - cron: "17 6 * * *"  # 予備 15:17 JST（定時実行が来なかった日のため。1日1件の上限で二重投稿はしない）
   workflow_dispatch:
 permissions:
   contents: write
