@@ -1,0 +1,12 @@
+{
+  "note": "表示が少ないうちは記事のタイトルやURLを変えない。週次レポートで表示の推移を見るだけ（ChatGPT第7報の提案）",
+  "queries": [
+    {
+      "query": "リモート帰省",
+      "article": "kisei-telework-ip-seigen-checklist",
+      "first_seen": "2026-11-11",
+      "impressions": 1,
+      "position": 15
+    }
+  ]
+}

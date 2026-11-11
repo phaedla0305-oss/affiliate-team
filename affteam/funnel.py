@@ -55,6 +55,7 @@ def build(snap: dict) -> dict:
             "redirects": redirects,
             "index": (s.get("index") or {}).get(slug) if sc_ok else None,
             "top_queries": sorted(sc.get("queries", []), key=lambda q: -q["impressions"])[:3] if sc_ok else [],
+            "all_queries": sc.get("queries", []) if sc_ok else [],
         })
     ok = a8.get("status") == "取得"
     revenue = a8.get("revenue") if ok else None
@@ -136,6 +137,21 @@ def markdown(f: dict, cands: list[dict]) -> str:
     lines += ["", "### 記事表示の流入元（GA4の既定チャネル）", "",
               ("、".join(f"{ch} {v}回" for ch, v in sorted(srcs.items(), key=lambda x: -x[1])) or
                ("データなし" if f["sources"]["ga4"] == "取得" else "未取得"))]
+    # 観測中の検索語（data/watch_queries.json）。少ないうちは記事を変えず、推移だけを見る
+    import json as _json
+    wpath = ARTICLES_DIR.parent.parent / "data" / "watch_queries.json"
+    if wpath.exists():
+        watch = _json.loads(wpath.read_text(encoding="utf-8")).get("queries", [])
+        if watch:
+            lines += ["", "### 観測中の検索語（記事は変えず、推移だけを見る）", "",
+                      "| 検索語 | 記事 | 初めて見た日 | 今期の表示 | 今期のクリック | 平均順位 |", "|---|---|---|---|---|---|"]
+            for w in watch:
+                hit = [q for r in f["rows"] if r["slug"] == w["article"] for q in r.get("all_queries", []) if q["query"] == w["query"]]
+                sc_ok = f["sources"]["search_console"] == "取得"
+                imp = sum(q["impressions"] for q in hit) if sc_ok else None
+                clk = sum(q["clicks"] for q in hit) if sc_ok else None
+                pos = hit[0]["position"] if hit else "—"
+                lines.append(f"| {w['query']} | {w['article'][:20]} | {w['first_seen']} | {_fmt(imp)} | {_fmt(clk)} | {pos} |")
     lines += ["", f"確定報酬（A8）：{_fmt(f['revenue'])}{'円' if f['revenue'] is not None else ''}（{_fmt(f['conversions'])}件）"
               f" ／ 承認待ち（発生）：{_fmt(f.get('pending_revenue'))}{'円' if f.get('pending_revenue') is not None else ''}"
               f"（{_fmt(f.get('pending_conversions'))}件） ※収益の評価は確定のみ。入金は別管理", "",

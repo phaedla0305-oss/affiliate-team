@@ -1,0 +1,22 @@
+{
+  "source": "ChatGPT（2026-11-11 第7報への返答）",
+  "received": "2026-11-11",
+  "keyword_seeds": [
+    {
+      "keyword": "テザリング 会社PC 更新 同期 通信量 確認",
+      "pain": "会社PCでテザリングするとき、大きな更新や同期でどれだけ通信量を使うか確認したい",
+      "evidence": "OS（Windows）と同期サービス（OneDriveなど）の公式サポート。会社の管理設定に従うことが前提",
+      "link_to": "moving-fiber-waiting-telework-internet",
+      "link_reason": "記事⑤（引っ越し時のつなぎ回線）・②（帰省先）を読んだ人の次の疑問",
+      "funnel": "案件記事へ自然に案内できる"
+    },
+    {
+      "keyword": "つなぎ回線 解約 返却 期限 端末代 チェックリスト",
+      "pain": "つなぎ回線を返却・解約するとき、期限・端末代・返却物を整理したい",
+      "evidence": "各事業者の公式の解約案内と契約書面（期限や費用を全サービス共通として書かない）",
+      "link_to": "zaitaku-home-router-erabikata",
+      "link_reason": "記事⑤④を読んで契約した人の、解約時の疑問",
+      "funnel": "案件記事へ自然に案内できる"
+    }
+  ]
+}
