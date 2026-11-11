@@ -1,13 +1,6 @@
-# SNS 投稿キュー（2026-11-10）
+# SNS 投稿キュー（2026-11-11）
 
 手動投稿する場合はコピーして使ってください。
-
-## sekai-vpn-myip-difference（案 v1）
-
-```
-セカイVPNとマイIP、名前が似てて止まる…固定IPが必要か、申し込む前の確認まで1記事で整理。#PR
-https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/sekai-vpn-myip-difference.html?utm_source=x&utm_medium=social&utm_campaign=sekai-vpn-myip-difference&utm_content=v1
-```
 
 ## moving-fiber-waiting-telework-internet（案 v1）
 
