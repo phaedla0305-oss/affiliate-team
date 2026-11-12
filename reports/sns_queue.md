@@ -23,6 +23,13 @@ https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/kisei-telework-ip-sei
 https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/sekai-vpn-myip-difference.html?utm_source=x&utm_medium=social&utm_campaign=sekai-vpn-myip-difference&utm_content=v2
 ```
 
+## moving-fiber-waiting-telework-internet（案 v2）
+
+```
+会議3時間×9日在宅なら通信量は約19〜53GB目安（画質次第）。不足しそうなら4択で検討→期間/解約条件/会社ルールをチェックリスト化 #広告
+https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/moving-fiber-waiting-telework-internet.html?utm_source=x&utm_medium=social&utm_campaign=moving-fiber-waiting-telework-internet&utm_content=v2
+```
+
 ## zaitaku-home-router-erabikata（案 v2）
 
 ```
