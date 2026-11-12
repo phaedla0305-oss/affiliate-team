@@ -1,7 +1,7 @@
 {
   "period": {
     "start": "2026-11-02",
-    "end": "2026-11-11",
+    "end": "2026-11-12",
     "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
   },
   "ga4": {
@@ -48,14 +48,26 @@
     "status": "取得",
     "pages": {
       "kisei-telework-ip-seigen-checklist": {
-        "impressions": 1,
+        "impressions": 2,
         "clicks": 0,
         "queries": [
           {
             "query": "ﾘﾓｰﾄ帰省",
+            "impressions": 2,
+            "clicks": 0,
+            "position": 11
+          }
+        ]
+      },
+      "moving-fiber-waiting-telework-internet": {
+        "impressions": 1,
+        "clicks": 0,
+        "queries": [
+          {
+            "query": "開通",
             "impressions": 1,
             "clicks": 0,
-            "position": 15
+            "position": 152
           }
         ]
       }
