@@ -1,7 +1,7 @@
 {
   "period": {
-    "start": "2026-11-02",
-    "end": "2026-11-12",
+    "start": "2026-11-07",
+    "end": "2026-11-13",
     "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
   },
   "ga4": {
@@ -48,14 +48,14 @@
     "status": "取得",
     "pages": {
       "kisei-telework-ip-seigen-checklist": {
-        "impressions": 2,
+        "impressions": 3,
         "clicks": 0,
         "queries": [
           {
             "query": "ﾘﾓｰﾄ帰省",
-            "impressions": 2,
+            "impressions": 3,
             "clicks": 0,
-            "position": 11
+            "position": 12.7
           }
         ]
       },
