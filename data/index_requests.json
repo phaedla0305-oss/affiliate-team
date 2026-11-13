@@ -1,0 +1,8 @@
+{
+  "note": "Search Console の「インデックス登録をリクエスト」の記録（運営者が手動で実施）。結果は週次の計測（URL検査）で追う",
+  "requests": [
+    {"date": "2026-11-08", "slugs": ["cafe-free-wifi-safety-vpn", "freelance-kotei-ip-hitsuyou-mail-template"], "by": "運営者", "result": "リクエスト済み（記録は会話から）"},
+    {"date": "2026-11-10", "slugs": ["cafe-free-wifi-safety-vpn", "freelance-kotei-ip-hitsuyou-mail-template"], "by": "運営者", "result": "リクエスト済み（記録は会話から）"},
+    {"date": "2026-11-13", "slugs": ["cafe-free-wifi-safety-vpn", "freelance-kotei-ip-hitsuyou-mail-template"], "by": "運営者", "result": "「インデックス登録をリクエスト済み」と表示。直前（11/13 09:27）の状態は「URL is unknown to Google」"}
+  ]
+}
