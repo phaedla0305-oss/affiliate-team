@@ -30,6 +30,13 @@ Zoom公式の目安：1対1の720pは上り下り1.2Mbps、グループの1080p�
 https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/zaitaku-home-router-erabikata.html?utm_source=x&utm_medium=social&utm_campaign=zaitaku-home-router-erabikata&utm_content=v2
 ```
 
+## freelance-kotei-ip-hitsuyou-mail-template（案 v2）
+
+```
+5項目チェックで要否判定＋代替4案比較＋メール例文3つ。まずは取引先と接続方法をすり合わせ。#広告
+https://phaedla0305-oss.github.io/zaitaku-toolbox/articles/freelance-kotei-ip-hitsuyou-mail-template.html?utm_source=x&utm_medium=social&utm_campaign=freelance-kotei-ip-hitsuyou-mail-template&utm_content=v2
+```
+
 ## cafe-free-wifi-safety-vpn（案 v5）
 
 ```
