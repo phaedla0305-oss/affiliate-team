@@ -1,6 +1,6 @@
 {
   "period": {
-    "start": "2026-11-07",
+    "start": "2026-10-17",
     "end": "2026-11-13",
     "note": "両端を含む。GA4・Search Console・A8 で同じ期間"
   },
@@ -8,10 +8,10 @@
     "status": "取得",
     "pages": {
       "kisei-telework-ip-seigen-checklist": {
-        "pageviews": 11,
-        "users": 11,
+        "pageviews": 12,
+        "users": 12,
         "sources": {
-          "Direct": 6,
+          "Direct": 7,
           "Organic Search": 4,
           "Organic Social": 1
         }
